@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Link from 'next/link'
+import { ErrorBoundary } from '@/components'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -34,7 +35,9 @@ export default function RootLayout({
           </div>
         </nav>
         <main>
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </main>
         <footer className="bg-gray-800 text-white p-4 mt-8">
           <div className="container-custom text-center">
