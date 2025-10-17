@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Button } from '@/components'
 
 export default function Home() {
@@ -11,9 +12,11 @@ export default function Home() {
           Next.js + React + TypeScript + Tailwind CSS
         </p>
         <div className="space-x-4">
-          <Button variant="primary" size="lg">
-            Get Started
-          </Button>
+          <Link href="/containers">
+            <Button variant="primary" size="lg">
+              Container Management
+            </Button>
+          </Link>
           <Button variant="outline" size="lg">
             Learn More
           </Button>
