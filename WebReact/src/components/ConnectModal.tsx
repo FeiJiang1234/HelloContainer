@@ -1,41 +1,24 @@
 'use client'
 
-import React from 'react'
 import { ContainerDto } from '@/types'
 import { Button } from '.'
 
-interface ConnectModalProps {
+interface Props {
   isOpen: boolean
   sourceContainer: ContainerDto | null
   availableContainers: ContainerDto[]
   onClose: () => void
-  onConnect: (sourceId: string, targetId: string) => void
-  isLoading?: boolean
+  onConnect: (targetId: string) => void
 }
 
-export default function ConnectModal({
-  isOpen,
-  sourceContainer,
-  availableContainers,
-  onClose,
-  onConnect,
-  isLoading = false
-}: ConnectModalProps) {
-  const handleConnect = (targetId: string) => {
-    if (sourceContainer) {
-      onConnect(sourceContainer.id, targetId)
-    }
-  }
-
+export default function ConnectModal({ isOpen, sourceContainer, availableContainers, onClose, onConnect }: Props) {
   if (!isOpen || !sourceContainer) return null
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="connect-modal" onClick={(e) => e.stopPropagation()}>
         <h5>Connect Container</h5>
-        <p>
-          Select a container to connect with <strong>{sourceContainer.name}</strong>:
-        </p>
+        <p>Select a container to connect with <strong>{sourceContainer.name}</strong>:</p>
         
         <div className="connect-options">
           {availableContainers.length === 0 ? (
@@ -45,26 +28,18 @@ export default function ConnectModal({
               <div
                 key={container.id}
                 className="connect-option"
-                onClick={() => handleConnect(container.id)}
+                onClick={() => onConnect(container.id)}
               >
                 <strong>{container.name}</strong>
                 <br />
-                <small>
-                  Capacity: {container.capacity}L, Amount: {container.amount}L
-                </small>
+                <small>Capacity: {container.capacity}L, Amount: {container.amount}L</small>
               </div>
             ))
           )}
         </div>
         
         <div className="mt-3">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-          >
-            Cancel
-          </Button>
+          <Button variant="secondary" onClick={onClose}>Cancel</Button>
         </div>
       </div>
     </div>

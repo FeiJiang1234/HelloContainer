@@ -1,89 +1,49 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Button } from '.'
 
-interface AddWaterModalProps {
+interface Props {
   isOpen: boolean
-  containerId: string
   containerName: string
   onClose: () => void
-  onSubmit: (containerId: string, amount: number) => void
-  isLoading?: boolean
+  onSubmit: (amount: number) => void
 }
 
-export default function AddWaterModal({
-  isOpen,
-  containerId,
-  containerName,
-  onClose,
-  onSubmit,
-  isLoading = false
-}: AddWaterModalProps) {
-  const [amount, setAmount] = useState<number>(1)
-  const [error, setError] = useState<string>('')
+export default function AddWaterModal({ isOpen, containerName, onClose, onSubmit }: Props) {
+  const [amount, setAmount] = useState(1)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (amount <= 0) {
-      setError('Amount must be greater than 0')
-      return
+    if (amount > 0) {
+      onSubmit(amount)
+      setAmount(1)
+      onClose()
     }
-    
-    setError('')
-    onSubmit(containerId, amount)
-  }
-
-  const handleClose = () => {
-    setAmount(1)
-    setError('')
-    onClose()
   }
 
   if (!isOpen) return null
 
   return (
-    <div className="modal-backdrop" onClick={handleClose}>
+    <div className="modal-backdrop" onClick={onClose}>
       <div className="connect-modal" onClick={(e) => e.stopPropagation()}>
-        <h5>Add Water to Container</h5>
-        <p>Adding water to: <strong>{containerName}</strong></p>
-        
+        <h5>Add Water to {containerName}</h5>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label htmlFor="waterAmount" className="form-label">
-              Amount (Liters):
-            </label>
+            <label className="form-label">Amount (Liters):</label>
             <input
               type="number"
-              id="waterAmount"
               value={amount}
-              onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-              className={`form-control ${error ? 'is-invalid' : ''}`}
+              onChange={(e) => setAmount(+e.target.value)}
+              className="form-control"
               step="0.1"
               min="0.1"
               required
             />
-            {error && (
-              <div className="invalid-feedback">{error}</div>
-            )}
           </div>
-          
           <div className="d-flex gap-2">
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Adding...' : 'Add Water'}
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleClose}
-            >
-              Cancel
-            </Button>
+            <Button type="submit" variant="primary">Add Water</Button>
+            <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
           </div>
         </form>
       </div>
