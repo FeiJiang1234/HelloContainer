@@ -1,0 +1,115 @@
+parameters:
+  - name: dotNetVersion
+    type: string
+    default: '8.0.x'
+
+stages:
+  - stage: build
+    displayName: Build
+    variables:
+      - template: Variables/global.yaml@PipelineTemplates
+      - name: imageTag
+        value: $(Build.BuildNumber)
+    jobs:
+      - ${{ if parameters.unitTestsPath }}:
+          - job: unitTests
+            displayName: Unit Tests
+            steps:
+              - template: Steps/unitTests.yaml
+                parameters:
+                  unitTestsPath: ${{ parameters.unitTestsPath }}
+
+      - job: service_build
+        displayName: Build Api
+        steps:
+          - checkout: self
+          - checkout: PipelineTemplates
+          - ${{ parameters.preBuildSteps }}
+          - template: Steps/dockerBuild.yaml
+            parameters:
+              serviceName: ${{ lower(parameters.serviceName) }}
+
+      - job: publish
+        dependsOn:
+          - service_build
+        displayName: Publish to ACR
+        workspace:
+          clean: outputs
+        steps:
+          - template: Steps/dockerPublish.yaml
+            parameters:
+              acrServiceConnection: ${{ variables.acrServiceConnection }}
+              imageTag: ${{ variables.imageTag }}
+
+  - stage: deploy
+    displayName: Deploy Dev
+    jobs:
+      - deployment: deployment
+        displayName: Deploy
+        variables:
+          - template: Variables/global.yaml@PipelineTemplates
+          - name: imageTag
+            value: $(Build.BuildNumber)
+        workspace:
+          clean: all
+        environment: ${{ variables.devOpsEnvironment }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                - checkout: BicepModules
+                - checkout: PipelineTemplates
+                - template: Steps/init.yaml
+                  parameters:
+                    serviceConnection: ${{ variables.serviceConnection }}
+                    location: westeurope
+
+      - ${{ if and(parameters.dbProjectPath, parameters.dbType) }}:
+          - deployment: dbMigration
+            dependsOn: deployment
+            displayName: DB Migration
+            variables:
+              - template: Variables/global.yaml@PipelineTemplates
+            workspace:
+              clean: all
+            environment: ${{ variables.devOpsEnvironment }}
+            pool:
+              ${{ if eq(parameters.dbType, 'sql') }}:
+                vmImage: windows-latest
+              ${{ elseif or(eq(parameters.dbType, 'cosmos'), eq(parameters.dbType, 'datalake')) }}:
+                name: ${{ variables.devOpsPoolName }}-weu
+            strategy:
+              runOnce:
+                deploy:
+                  steps:
+                    - checkout: self
+                    - checkout: PipelineTemplates
+                    - template: Steps/getInfraOutputs.yaml
+                      parameters:
+                        serviceConnection: ${{ variables.serviceConnection }}
+                        serviceName: ${{ lower(parameters.serviceName) }}
+                        location: westeurope
+                        instanceNumber: ${{ parameters.instanceNumber }}
+                        environment: dev
+                    - template: Steps/getInfraOutputs.yaml
+                      parameters:
+                        serviceConnection: ${{ variables.serviceConnection }}
+                        serviceName: common
+                        location: westeurope
+                        instanceNumber: ${{ parameters.commonInstanceNumber }}
+                        environment: dev
+                    - ${{ if eq(parameters.dbType, 'sql') }}:
+                        - template: Steps/getInfraOutputs.yaml
+                          parameters:
+                            serviceConnection: ${{ variables.serviceConnection }}
+                            serviceName: global
+                            location: westeurope
+                            instanceNumber: ${{ parameters.globalInstanceNumber }}
+                            environment: dev
+                        - template: Steps/runSqlMigration.yaml
+                          parameters:
+                            sqlScriptPath: $(Pipeline.Workspace)/DBMigrations/migrations.sql
+                            serviceConnection: ${{ variables.serviceConnection }}
+                            serviceName: ${{ parameters.serviceName }}
+                            keyVaultName: ${{ parameters.dbSqlKeyvaultName }}

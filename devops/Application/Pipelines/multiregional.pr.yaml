@@ -1,0 +1,55 @@
+name: $(major).$(minor).$(Rev:r)
+
+trigger: none
+
+resources:
+  repositories:
+    - repository: PipelineTemplates
+      name: PipelineTemplates
+      ref: refs/heads/main
+      type: git
+    - repository: BicepModules
+      name: BicepModules
+      ref: refs/heads/main
+      type: git
+
+variables:
+  - name: major
+    value: 0
+  - name: minor
+    value: 0
+
+
+extends:
+  template: pr.app.template.yaml@PipelineTemplates
+  parameters:
+    serviceName: Container
+    dotNetVersion: 8.0.x
+    webProjectPath: src/Api
+    dockerfilePath: src/Api/Dockerfile
+    unitTestsPath: src/UnitTests
+    dbProjectPath: src/Api/Container.Api.csproj
+    dbType: sql
+    dbSqlKeyvaultName: $(common.masterKeyvaultCommon.name)
+    intTestProjectPath: src/IntegrationTests
+    bicep:
+      bicepFile: containerApp.bicep
+      bicepParameters:
+        acrLoginServer:
+          value: $(acrServiceConnection).azurecr.io
+        containerAppsEnvironmentId:
+          value: $(common.containerAppsEnvironment.id)
+        managedIdentityResourceId:
+          value: $(common.containerAppsManagedIdenity.id)
+        imageTag:
+          value: $(Build.BuildNumber)
+        globalResourceGroupName:
+          value: $(global.resourceGroup.name)
+        globalKeyVaultResourceId:
+          value: $(global.masterKeyVaultGlobal.id)
+
+
+    appSettings:
+      - key: ConnectionStrings:Redis
+        value: $(ConnectionStrings:Redis)
+        type: keyVaultRef

@@ -1,0 +1,15 @@
+parameters:
+- name: environment
+  type: string
+  default: dev
+
+variables:
+  - name: nugetFeed
+    value: https://nuget/v3/index.json
+    
+  - ${{ if eq(parameters['environment'], 'dev') }}:
+    - name: resourceGroupName
+      value: dev-global-rg-01
+    - name: storageAccountName
+      value: devglobal
+    

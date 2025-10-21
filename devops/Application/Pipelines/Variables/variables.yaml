@@ -1,0 +1,8 @@
+parameters:
+  - name: environment
+    type: string
+    default: dev
+
+variables:
+  ConnectionStrings:ContainerDatabase: $(common.masterKeyVaultCommon.vaultUri)secrets/ConnectionStrings--Database
+  APIs.TenantApiUrl: http://tenant/

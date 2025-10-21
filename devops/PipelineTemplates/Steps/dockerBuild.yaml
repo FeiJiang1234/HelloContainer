@@ -1,0 +1,41 @@
+parameters:
+- name: serviceName
+  type: string
+- name: acrServiceConnection
+  type: string
+- name: acrLoginServer
+  type: string
+- name: dockerFilePath
+  type: string
+- name: imageTag
+  type: string
+  default: $(Build.BuildNumber)
+
+steps:
+  - pwsh: |
+      write-host("Service Connection Name: ${{ parameters.acrServiceConnection }}")
+    displayName: Show service connection name
+
+  - task: Docker@2
+    displayName: Login to ACR
+    inputs:
+      command: login
+      containerRegistry: ${{ parameters.acrServiceConnection }}
+
+  - task: Docker@2
+    name: 'BuildContainerImageBuild'
+    inputs:
+      repository: ${{ parameters.serviceName }}
+      dockerfile: $(Build.Repository.Name)/${{ parameters.dockerfilePath }}
+      buildContext: '$(Build.Repository.Name)'
+      command: build
+      tags: ${{ parameters.imageTag }}
+      arguments: --build-arg ACCESS_TOKEN=$(System.AccessToken)
+
+  - script: |
+      docker save -o $(Build.ArtifactStagingDirectory)/${{ parameters.serviceName }}.tar ${{ parameters.acrLoginServer }}/${{ parameters.serviceName }}:$(Build.BuildNumber)
+    displayName: Save docker image as .tar
+
+  - publish: $(Build.ArtifactStagingDirectory)/${{ parameters.serviceName }}.tar
+    artifact: docker-images
+    displayName: Publish image as .tar to artifacts

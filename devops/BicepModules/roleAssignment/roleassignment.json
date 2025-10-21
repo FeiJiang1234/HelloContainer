@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "roleAssignments" : {
+      "type": "array",
+      "metadata": {
+        "description": "The role assignments to create"
+      }
+    },
+    "subscriptionId": {
+      "type": "string",
+      "metadata": {
+        "description": "The id string of the Azure subscription"
+      },
+      "defaultValue": "[subscription().subscriptionId]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "copy": {
+        "name": "roleAssignments",
+        "count": "[length(parameters('roleAssignments'))]"
+      },
+      "name": "[guid(parameters('roleAssignments')[copyIndex()].principalId, parameters('roleAssignments')[copyIndex()].roleDefinitionId, parameters('roleAssignments')[copyIndex()].resourceId)]",
+      "scope": "[parameters('roleAssignments')[copyIndex()].resourceId]",
+      "properties": {
+        "roleDefinitionId": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Authorization/roleDefinitions/', parameters('roleAssignments')[copyIndex()].roleDefinitionId)]",
+        "principalId": "[parameters('roleAssignments')[copyIndex()].principalId]"
+      }
+    }
+  ]
+}
