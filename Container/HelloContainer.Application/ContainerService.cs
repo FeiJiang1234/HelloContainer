@@ -19,7 +19,9 @@ namespace HelloContainer.Application
         private readonly ContainerFactory _containerFactory;
         private readonly IDistributedCache _distributedCache;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
-        private static readonly DistributedCacheEntryOptions CacheOptions = new() { AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1) };
+        private static readonly DistributedCacheEntryOptions CacheOptions = new() { 
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30) 
+        };
 
         public ContainerService(IContainerRepository containerRepository, IMapper mapper, IUnitOfWork unitOfWork, 
             ContainerManager containerManager, ContainerFactory containerFactory, 

@@ -13,6 +13,9 @@ using MassTransit;
 using HelloContainer.Api.Settings;
 using Microsoft.Extensions.Options;
 using HelloContainer.Api.Services;
+using OpenTelemetry;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Instrumentation.AspNetCore;
 
 namespace HelloContainer.Api.Extensions
 {
@@ -92,5 +95,63 @@ namespace HelloContainer.Api.Extensions
 
             return services;
         }
+
+        //public static IOpenTelemetryBuilder AddContainerOpenTelemetry(
+        //    this IServiceCollection services,
+        //    IConfiguration configuration,
+        //    Action<AzureMonitorOptions>? configureAzureMonitor = null,
+        //    Action<OpenTelemetryLoggerOptions>? configureLogging = null
+        //)
+        //{
+        //    var otel = services.AddOpenTelemetry();
+
+        //    services.Configure<AspNetCoreTraceInstrumentationOptions>(t =>
+        //    {
+        //        t.Filter = (httpContext) =>
+        //        !new HashSet<string> {
+        //        "/health"
+        //        }.Contains(httpContext.Request.Path.ToString().ToLowerInvariant());
+        //    });
+
+        //    // Add Metrics for ASP.NET Core and our custom metrics and export via OTLP
+        //    otel.WithMetrics(metrics =>
+        //    {
+        //        // Metrics provider from OpenTelemetry
+        //        metrics.AddAspNetCoreInstrumentation();
+        //        // Metrics provides by ASP.NET Core in .NET 8
+        //        metrics.AddMeter("Microsoft.AspNetCore.Hosting");
+        //        metrics.AddMeter("Microsoft.AspNetCore.Server.Kestrel");
+        //    });
+
+        //    // Add Logging for ASP.NET Core and our custom logs and export via OTLP
+        //    otel.WithLogging(null, o =>
+        //    {
+        //        o.IncludeFormattedMessage = true;
+        //        o.IncludeScopes = true;
+        //        o.ParseStateValues = true;
+
+        //        configureLogging?.Invoke(o);
+        //    });
+
+        //    // Add Tracing for ASP.NET Core and our custom ActivitySource and export via OTLP
+        //    otel.WithTracing(b =>
+        //    {
+        //        b.AddSource(DiagnosticHeaders.DefaultListenerName);
+        //    });
+
+        //    var connectionString = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
+
+        //    if (!string.IsNullOrWhiteSpace(connectionString))
+        //    {
+        //        otel
+        //        .UseAzureMonitor(o =>
+        //        {
+        //            o.ConnectionString = connectionString;
+        //            configureAzureMonitor?.Invoke(o);
+        //        });
+        //    }
+
+        //    return otel;
+        //}
     }
 }
