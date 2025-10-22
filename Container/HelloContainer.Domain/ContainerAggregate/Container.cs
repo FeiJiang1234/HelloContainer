@@ -20,6 +20,11 @@ namespace HelloContainer.Domain.ContainerAggregate
             set => ConnectedContainerIdsRaw = value?.Select(g => g.ToString()).ToList() ?? new();
         }
 
+        public Container()
+        {
+        }
+
+
         private Container(string name, Capacity capacity)
         {
             Name = name;

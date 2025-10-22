@@ -3,6 +3,10 @@ using HelloContainer.DTOs;
 using HelloContainer.Domain.Abstractions;
 using HelloContainer.Domain.Services;
 using HelloContainer.SharedKernel;
+using Microsoft.Extensions.Caching.Distributed;
+using MassTransit.Internals.Caching;
+using System.Text.Json;
+using HelloContainer.Application.Extensions;
 
 namespace HelloContainer.Application
 {
@@ -13,14 +17,21 @@ namespace HelloContainer.Application
         private readonly IUnitOfWork _unitOfWork;
         private readonly ContainerManager _containerManager;
         private readonly ContainerFactory _containerFactory;
+        private readonly IDistributedCache _distributedCache;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+        private static readonly DistributedCacheEntryOptions CacheOptions = new() { AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1) };
 
-        public ContainerService(IContainerRepository containerRepository, IMapper mapper, IUnitOfWork unitOfWork, ContainerManager containerManager, ContainerFactory containerFactory)
+        public ContainerService(IContainerRepository containerRepository, IMapper mapper, IUnitOfWork unitOfWork, 
+            ContainerManager containerManager, ContainerFactory containerFactory, 
+            IDistributedCache distributedCache, JsonSerializerOptions jsonSerializerOptions)
         {
             _containerRepository = containerRepository;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _containerManager = containerManager;
             _containerFactory = containerFactory;
+            _distributedCache = distributedCache;
+            _jsonSerializerOptions = jsonSerializerOptions;
         }
 
         public async Task<Result<ContainerReadDto>> CreateContainer(CreateContainerDto createDto)
@@ -45,7 +56,11 @@ namespace HelloContainer.Application
 
         public async Task<ContainerReadDto?> GetContainerById(Guid id)
         {
-            var container = await _containerRepository.GetById(id);
+            var container = await _distributedCache.CacheForResult(id.ToString(), async () =>
+            {
+                return await _containerRepository.GetById(id);
+            }, _jsonSerializerOptions, CacheOptions);
+
             return _mapper.Map<ContainerReadDto>(container);
         }
 

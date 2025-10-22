@@ -2,8 +2,10 @@
 using HelloContainer.Api.Middleware;
 using HelloContainer.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -12,6 +14,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(configuration.GetSection("AzureAd"));
 
 builder.Services.AddControllers();
+
+builder.Services.AddSingleton<JsonSerializerOptions>(new JsonSerializerOptions
+{
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    WriteIndented = true,
+    AllowTrailingCommas = true,
+});
+
+builder.Services.AddStackExchangeRedisCache(o =>
+{
+    o.Configuration = "";
+    o.InstanceName = $"Container-Dev";
+});
+builder.Services.Configure<DistributedCacheEntryOptions>(o => o.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
