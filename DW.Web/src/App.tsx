@@ -1,9 +1,7 @@
-import React from 'react';
+import { AppRouter } from './router';
 
 function App() {
-  return (
-    <h1>欢迎使用 DW Web</h1>
-  );
+  return <AppRouter />;
 }
 
 export default App;
