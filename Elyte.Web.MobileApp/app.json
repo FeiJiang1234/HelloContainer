@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "Elyte Sport",
+    "slug": "elyte-llc",
+    "owner": "elyteapp",
+    "version": "1.0.4",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.elyteapp.prod",
+      "buildNumber": "1"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.elyteapp.prod",
+      "versionCode": 11
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f86107c5-60c8-470b-8a74-f18afa06a1ff"
+      }
+    },
+    "plugins": [
+      "sentry-expo"
+    ],
+    "hooks": {
+        "postPublish": [
+            {
+                "file": "sentry-expo/upload-sourcemaps",
+                "config": {
+                    "organization": "elyte-llc",
+                    "project": "elyte-sports",
+                    "authToken": "bfa71fc3eabb4f628371ebedc10a4bc1696c070060524ff0824b7f871c2fe597"
+                }
+            }
+        ]
+    }
+  }
+}

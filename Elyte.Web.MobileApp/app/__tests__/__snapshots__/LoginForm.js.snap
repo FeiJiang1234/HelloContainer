@@ -1,0 +1,278 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`render login form snapshot 1`] = `
+<RNCSafeAreaProvider
+  onInsetsChange={[Function]}
+  style={
+    [
+      {
+        "flex": 1,
+      },
+      undefined,
+    ]
+  }
+>
+  <View
+    style={
+      {
+        "backgroundColor": "#F0F2F7",
+        "borderRadius": 15,
+        "flexDirection": "row",
+        "marginVertical": 10,
+        "padding": 6,
+      }
+    }
+  >
+    <View
+      dataSet={{}}
+      isFocused={false}
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "#F0F2F7",
+          "borderColor": "#d4d4d4",
+          "borderRadius": 4,
+          "borderWidth": 0,
+          "flex": 1,
+          "flexDirection": "row",
+          "overflow": "hidden",
+        }
+      }
+    >
+      <TextInput
+        accessible={true}
+        autoCapitalize="none"
+        autoCorrect={false}
+        dataSet={{}}
+        editable={true}
+        inputAccessoryViewID="InputAccessoryDone"
+        keyboardType="email-address"
+        name="account"
+        nativeID="undefined-input"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onChangeText={[Function]}
+        onFocus={[Function]}
+        onKeyPress={[Function]}
+        placeholder="Email or Phone number"
+        placeholderTextColor="#808A9E"
+        secureTextEntry={false}
+        style={
+          [
+            {
+              "backgroundColor": "transparent",
+              "color": "#171717",
+              "flex": 1,
+              "fontFamily": undefined,
+              "fontSize": 12,
+              "fontStyle": "normal",
+              "fontWeight": "400",
+              "height": "100%",
+              "paddingBottom": 8,
+              "paddingLeft": 12,
+              "paddingRight": 12,
+              "paddingTop": 8,
+              "width": "100%",
+            },
+            {
+              "color": "#0c0c0c",
+              "fontFamily": "Avenir",
+              "fontSize": 16,
+            },
+          ]
+        }
+        testID="account"
+        textContentType="emailAddress"
+      />
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "backgroundColor": "#F0F2F7",
+        "borderRadius": 15,
+        "flexDirection": "row",
+        "marginVertical": 10,
+        "padding": 6,
+      }
+    }
+  >
+    <View
+      dataSet={{}}
+      isFocused={false}
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "#F0F2F7",
+          "borderColor": "#d4d4d4",
+          "borderRadius": 4,
+          "borderWidth": 0,
+          "flex": 1,
+          "flexDirection": "row",
+          "overflow": "hidden",
+        }
+      }
+    >
+      <TextInput
+        accessible={true}
+        autoCapitalize="none"
+        autoCorrect={false}
+        dataSet={{}}
+        editable={true}
+        inputAccessoryViewID="InputAccessoryDone"
+        name="password"
+        nativeID="undefined-input"
+        onBlur={[Function]}
+        onChange={[Function]}
+        onChangeText={[Function]}
+        onFocus={[Function]}
+        onKeyPress={[Function]}
+        placeholder="Password"
+        placeholderTextColor="#808A9E"
+        secureTextEntry={true}
+        style={
+          [
+            {
+              "backgroundColor": "transparent",
+              "color": "#171717",
+              "flex": 1,
+              "fontFamily": undefined,
+              "fontSize": 12,
+              "fontStyle": "normal",
+              "fontWeight": "400",
+              "height": "100%",
+              "paddingBottom": 8,
+              "paddingLeft": 12,
+              "paddingRight": 12,
+              "paddingTop": 8,
+              "width": "100%",
+            },
+            {
+              "color": "#0c0c0c",
+              "fontFamily": "Avenir",
+              "fontSize": 16,
+            },
+          ]
+        }
+        testID="password"
+        textContentType="password"
+      />
+    </View>
+  </View>
+  <Text
+    dataSet={{}}
+    style={
+      {
+        "backgroundColor": undefined,
+        "color": "#171717",
+        "fontFamily": undefined,
+        "fontSize": 14,
+        "fontStyle": "normal",
+        "fontWeight": "400",
+        "letterSpacing": 0,
+        "lineHeight": 21,
+        "marginBottom": 8,
+        "marginTop": 8,
+        "textAlign": "center",
+        "textDecorationLine": undefined,
+      }
+    }
+  >
+    Forgot the password? Request for a
+     
+    <Text
+      onPress={[Function]}
+      style={
+        [
+          {
+            "color": "#17C476",
+          },
+          undefined,
+        ]
+      }
+    >
+      Password Reset
+    </Text>
+     or
+     
+    <Text
+      onPress={[Function]}
+      style={
+        [
+          {
+            "color": "#17C476",
+          },
+          undefined,
+        ]
+      }
+    >
+      Contact us
+    </Text>
+  </Text>
+  <View
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "opacity": 1,
+      }
+    }
+  >
+    <ViewManagerAdapter_ExpoLinearGradient
+      proxiedProperties={
+        {
+          "colors": [
+            4280235101,
+            4278717979,
+          ],
+          "endPoint": undefined,
+          "locations": [
+            0,
+            0.98,
+          ],
+          "startPoint": undefined,
+        }
+      }
+      style={
+        [
+          {
+            "alignItems": "center",
+            "borderRadius": 10,
+            "height": 60,
+            "justifyContent": "center",
+            "width": "100%",
+          },
+          {},
+          {
+            "marginBottom": 8,
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#fff",
+              "fontWeight": "bold",
+            },
+            {
+              "fontSize": 18,
+            },
+          ]
+        }
+      >
+        Sign in
+      </Text>
+    </ViewManagerAdapter_ExpoLinearGradient>
+  </View>
+</RNCSafeAreaProvider>
+`;

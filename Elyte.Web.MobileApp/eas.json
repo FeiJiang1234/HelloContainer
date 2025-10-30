@@ -1,0 +1,33 @@
+{
+  "cli": {
+    "version": ">= 2.1.0"
+  },
+  "build": {
+    "base": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "development": {
+      "extends": "base",
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "extends": "base",
+      "distribution": "internal"
+    },
+    "production": {
+      
+    }
+  },
+  "submit": {
+    "production": {
+        "ios": {
+            "appleId": "chantz@elyte.app",
+            "ascAppId": "6466176120",
+            "appleTeamId": "96DY6LD33D"
+        }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+<svg viewBox="0 0 325 363" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="323" height="361" stroke="white" stroke-width="2"/>
+    <rect x="60" y="1" width="205" height="65" stroke="white" stroke-width="2"/>
+    <rect x="265" y="362" width="205" height="65" transform="rotate(-180 265 362)" stroke="white" stroke-width="2"/>
+    <rect x="219" y="362" width="113" height="30" transform="rotate(-180 219 362)" stroke="white" stroke-width="2"/>
+    <rect x="180" y="362" width="35" height="14" transform="rotate(-180 180 362)" stroke="white" stroke-width="2"/>
+    <rect x="106" y="1" width="113" height="30" stroke="white" stroke-width="2"/>
+    <rect x="145" y="1" width="35" height="14" stroke="white" stroke-width="2"/>
+    <circle cx="163" cy="182" r="39" stroke="white" stroke-width="2"/>
+    <path d="M0 181.5H325" stroke="white" stroke-width="2"/>
+    <path d="M1 181.5L139 66" stroke="white" stroke-width="2"/>
+    <path d="M1 181.5L139 297" stroke="white" stroke-width="2"/>
+    <path d="M324 181L186 66" stroke="white" stroke-width="2"/>
+    <path d="M324 181L186 296" stroke="white" stroke-width="2"/>
+    <path d="M139 65.9648C139 65.9648 145.084 86.6992 162.866 86.6992C180.649 86.6992 186.733 65.9648 186.733 65.9648" stroke="white" stroke-width="2"/>
+    <path d="M139 295.699C139 295.699 145.084 274.965 162.866 274.965C180.649 274.965 186.733 295.699 186.733 295.699" stroke="white" stroke-width="2"/>
+    <circle cx="163" cy="47" r="5" fill="white"/>
+    <circle cx="163" cy="181" r="5" fill="white"/>
+    <circle cx="163" cy="315" r="5" fill="white"/>
+</svg>
+    
