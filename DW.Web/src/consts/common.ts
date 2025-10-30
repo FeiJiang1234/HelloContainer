@@ -1,1 +1,0 @@
-export const GLOBAL_TABLE_SIZE = 50
