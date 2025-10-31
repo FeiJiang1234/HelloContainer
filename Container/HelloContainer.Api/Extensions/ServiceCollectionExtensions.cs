@@ -13,9 +13,7 @@ using MassTransit;
 using HelloContainer.Api.Settings;
 using Microsoft.Extensions.Options;
 using HelloContainer.Api.Services;
-using OpenTelemetry;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Instrumentation.AspNetCore;
+using HelloContainer.Application.Authorization;
 
 namespace HelloContainer.Api.Extensions
 {
@@ -92,6 +90,7 @@ namespace HelloContainer.Api.Extensions
             services.AddScoped<ContainerFactory>();
             services.AddScoped<AlertService>();
             services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IUserRoleRetriever, UserRolesRetriever>();
 
             return services;
         }

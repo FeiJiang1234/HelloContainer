@@ -1,4 +1,5 @@
-﻿using HelloContainer.Application;
+﻿using HelloContainer.Api.Authorization;
+using HelloContainer.Application;
 using HelloContainer.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ namespace HelloContainer.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]s")]
-    //[Authorize]
+    [Authorize(Policy = "OpaPolicy")]
     public class ContainerController : ApiControllerBase
     {
         private readonly ContainerService _containerService;
@@ -18,6 +19,7 @@ namespace HelloContainer.Api.Controllers
         }
 
         [HttpPost]
+        [OpaAuthorize(IncludeRequestPayloadInAuthContext = true)]
         public async Task<ActionResult<ContainerReadDto>> CreateContainer(CreateContainerDto createDto)
         {
             var result = await _containerService.CreateContainer(createDto);

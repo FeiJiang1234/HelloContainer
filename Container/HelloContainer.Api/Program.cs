@@ -1,5 +1,6 @@
 ﻿using HelloContainer.Api.Extensions;
 using HelloContainer.Api.Middleware;
+using HelloContainer.Api.OPA;
 using HelloContainer.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Distributed;
@@ -14,6 +15,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(configuration.GetSection("AzureAd"));
 
 builder.Services.AddControllers();
+
+builder.Services.AddOpaPolicyAuthorization();
+
+builder.Services.AddAuthorization(o =>
+{
+    o.AddPolicy("OpaPolicy", p =>
+    {
+        var opaPolicyRequirement = new OpaPolicyRequirement();
+        configuration.Bind("OpaPolicy", opaPolicyRequirement);
+        p.AddRequirements(opaPolicyRequirement);
+    });
+});
 
 // App Insights
 //builder.Services.AddApplicationInsightsTelemetry();
@@ -108,7 +121,7 @@ app.UseDomainExceptionHandler();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseMiddleware<OpaAuthorizationMiddleware>();
+//app.UseMiddleware<OpaAuthorizationMiddleware>();
 
 app.MapControllers();
 

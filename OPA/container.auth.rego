@@ -1,19 +1,8 @@
-package container.auth
+import future.keywords.every
+import future.keywords.in
 
-default allow = false
-
-allow {
-    input.user.roles[_] == "Admin"
-}
-
-allow {
-    input.user.roles[_] == "User"
-    input.request.action == "read"
-    input.request.resource == "container"
-}
-
-allow {
-    input.user.roles[_] == "User"
-    input.request.action == "read"
-    input.request.resource == "alert"
+default GET_Container_GetContainers_0 = false
+GET_Container_GetContainers_0 {
+	input.method == "GET"
+	input.path == ["Containers"]
 }
