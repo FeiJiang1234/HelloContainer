@@ -14,7 +14,7 @@ var configuration = builder.Configuration;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(configuration.GetSection("AzureAd"));
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddDWJsonOptions();
 
 builder.Services.AddOpaPolicyAuthorization();
 

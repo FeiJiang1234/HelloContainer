@@ -131,15 +131,23 @@ namespace HelloContainer.Api.OPA
             await JsonSerializer.SerializeAsync(stream, body, _jsonSerializerOptions);
             stream.Position = 0;
 
+            // 调试：查看实际发送的 JSON 数据
+            stream.Position = 0;
+            using var reader = new StreamReader(stream, leaveOpen: true);
+            var jsonContent = await reader.ReadToEndAsync();
+            Console.WriteLine($"[OPA Debug] Sending to {uri}:");
+            Console.WriteLine(jsonContent);
+            stream.Position = 0;
+
             // Create an HttpRequestMessage using StreamContent
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, uri)
             {
                 Content = new StreamContent(stream)
                 {
                     Headers =
-                {
-                    ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json")
-                }
+                    {
+                        ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json")
+                    }
                 }
             };
 

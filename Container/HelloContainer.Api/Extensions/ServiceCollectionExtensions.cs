@@ -14,6 +14,8 @@ using HelloContainer.Api.Settings;
 using Microsoft.Extensions.Options;
 using HelloContainer.Api.Services;
 using HelloContainer.Application.Authorization;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HelloContainer.Api.Extensions
 {
@@ -93,6 +95,16 @@ namespace HelloContainer.Api.Extensions
             services.AddSingleton<IUserRoleRetriever, UserRolesRetriever>();
 
             return services;
+        }
+
+        public static IMvcBuilder AddDWJsonOptions(this IMvcBuilder builder, Action<JsonOptions>? configure = default!)
+        {
+            return builder.AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.GloballyInitialize();
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                configure?.Invoke(options);
+            });
         }
 
         //public static IOpenTelemetryBuilder AddContainerOpenTelemetry(
