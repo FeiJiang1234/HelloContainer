@@ -23,5 +23,13 @@ namespace HelloContainer.Api.Extensions
             });
             return options;
         }
+
+        public static JsonSerializerOptions Create()
+        {
+            var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+            options.GloballyInitialize();
+
+            return options;
+        }
     }
 }
