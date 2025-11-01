@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using MassTransit.Internals.Caching;
 using System.Text.Json;
 using HelloContainer.Application.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace HelloContainer.Application
 {
@@ -25,7 +26,7 @@ namespace HelloContainer.Application
 
         public ContainerService(IContainerRepository containerRepository, IMapper mapper, IUnitOfWork unitOfWork, 
             ContainerManager containerManager, ContainerFactory containerFactory, 
-            IDistributedCache distributedCache, JsonSerializerOptions jsonSerializerOptions)
+            IDistributedCache distributedCache, IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _containerRepository = containerRepository;
             _mapper = mapper;
@@ -33,7 +34,7 @@ namespace HelloContainer.Application
             _containerManager = containerManager;
             _containerFactory = containerFactory;
             _distributedCache = distributedCache;
-            _jsonSerializerOptions = jsonSerializerOptions;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task<Result<ContainerReadDto>> CreateContainer(CreateContainerDto createDto)

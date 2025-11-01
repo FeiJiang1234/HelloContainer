@@ -4,10 +4,8 @@ using HelloContainer.Api.OPA;
 using HelloContainer.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
-using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -32,18 +30,6 @@ builder.Services.AddAuthorization(o =>
 
 // App Insights
 //builder.Services.AddApplicationInsightsTelemetry();
-
-// Redis
-// 配置 JsonSerializerOptions 以便通过 IOptions 注入
-//builder.Services.Configure<JsonSerializerOptions>(options =>
-//{
-//    options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-//    options.WriteIndented = true;
-//    options.AllowTrailingCommas = true;
-//});
-
-// 也注册为单例以便直接注入使用
-builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<JsonSerializerOptions>>().Value);
 
 builder.Services.AddStackExchangeRedisCache(o =>
 {

@@ -110,12 +110,6 @@ namespace HelloContainer.Api.Extensions
 
         public static IServiceCollection AddJsonSerializerOptions(this IServiceCollection services, Action<JsonSerializerOptions>? setupAction = null)
         {
-            services.AddSingleton(_ =>
-            {
-                var o = DWJsonSerializerOptions.Create();
-                return Options.Create(o);
-            });
-
             services.AddOptions<JsonSerializerOptions>().Configure(o =>
             {
                 o.GloballyInitialize();
