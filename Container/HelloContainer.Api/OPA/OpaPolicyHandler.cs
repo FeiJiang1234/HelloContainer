@@ -1,4 +1,5 @@
 ﻿using HelloContainer.Application.Authorization;
+using HelloContainer.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
@@ -46,10 +47,17 @@ namespace HelloContainer.Api.OPA
                 if (allowAnony != null)
                     return true;
 
-                var roles = await _rolesRetriever.Retrieve(Guid.NewGuid());
+                var userd = httpContext.User.FindFirst("userId")?.Value;
+                
+                if (string.IsNullOrEmpty(userd))
+                {
+                    return false;
+                }
+                
+                var role = await _rolesRetriever.Retrieve(Guid.Parse(userd));
 
                 var allow = await EvalOpaPolicyAsync(
-                       roles,
+                       role,
                        httpContext,
                        requirement
                    );
@@ -58,13 +66,13 @@ namespace HelloContainer.Api.OPA
             }
             catch (Exception ex)
             {
-                
+                Console.WriteLine($"[OPA Debug] Error in EvalPolicy: {ex.Message}");
             }
             return false;
         }
 
         internal async Task<bool?> EvalOpaPolicyAsync(
-            IEnumerable<UserRoleLookupEntry> roles,
+            UserRole role,
             HttpContext httpContext,
             OpaPolicyRequirement requirement,
             bool includePayloadInContext = false,
@@ -109,6 +117,7 @@ namespace HelloContainer.Api.OPA
                         Args = args,
                         Context = new
                         {
+                            Role = role,
                             Payload = requestPayload,
                         },
                     }
@@ -118,7 +127,7 @@ namespace HelloContainer.Api.OPA
             }
             catch (Exception ex)
             {
-
+                Console.WriteLine($"[OPA Debug] Error in EvalOpaPolicyAsync: {ex.Message}");
             }
 
             return allow;
@@ -131,7 +140,6 @@ namespace HelloContainer.Api.OPA
             await JsonSerializer.SerializeAsync(stream, body, _jsonSerializerOptions);
             stream.Position = 0;
 
-            // 调试：查看实际发送的 JSON 数据
             stream.Position = 0;
             using var reader = new StreamReader(stream, leaveOpen: true);
             var jsonContent = await reader.ReadToEndAsync();

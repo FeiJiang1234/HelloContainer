@@ -1,20 +1,16 @@
-﻿namespace HelloContainer.Application.Authorization
+﻿
+using HelloContainer.DTOs;
+
+namespace HelloContainer.Application.Authorization
 {
     public class UserRolesRetriever : IUserRoleRetriever
     {
-        public async Task<IEnumerable<UserRoleLookupEntry>> Retrieve(Guid userId)
+        public async Task<UserRole> Retrieve(Guid userId)
         {
-            var userRoles = new List<UserRoleLookupEntry>
-            {
-                new UserRoleLookupEntry(
-                    new UserRoleScope("workspace", "196a8ff4-dfbc-4ee7-ae08-4f38b84d9c86"),
-                    [
-                        new UserRole(new UserRoleScope("workspace",  "196a8ff4-dfbc-4ee7-ae08-4f38b84d9c86"), "reader")
-                    ]
-                )
-            };
+            if (userId == Guid.Parse("36f17b7f-3829-4e61-8106-d9047bd04dc4"))
+                return new UserRole("administrator");
 
-            return await Task.FromResult(userRoles);
+            return await Task.FromResult(new UserRole("reader"));
         }
     }
 }
