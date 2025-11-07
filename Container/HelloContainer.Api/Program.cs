@@ -5,6 +5,7 @@ using HelloContainer.Api.Services;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -12,11 +13,19 @@ var configuration = builder.Configuration;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
-    //options.Authority = "https://logintest.veracity.com/tfp/ed815121-cdfa-4097-b524-e2b23cd36eb6/B2C_1A_SignInWithADFSIdp/v2.0";
     options.Authority = "https://login.microsoftonline.com/a7cd5b59-9f45-477d-b7d6-60fc2dd177a1/v2.0";
-    options.Audience = "2b64a7f1-5fae-420b-a5f7-7be79d54ba74";
+    options.Audience = "d4e71aba-dcd3-47b6-b9ae-6ca460e71892";
     options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
-    
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateIssuerSigningKey = true, // 这会触发密钥获取
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.FromMinutes(5)
+    };
+
     options.Events = new JwtBearerEvents
     {
         OnTokenValidated = context =>
