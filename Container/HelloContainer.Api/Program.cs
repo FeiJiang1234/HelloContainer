@@ -12,7 +12,8 @@ var configuration = builder.Configuration;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
-    options.Authority = "https://logintest.veracity.com/tfp/ed815121-cdfa-4097-b524-e2b23cd36eb6/B2C_1A_SignInWithADFSIdp/v2.0";
+    //options.Authority = "https://logintest.veracity.com/tfp/ed815121-cdfa-4097-b524-e2b23cd36eb6/B2C_1A_SignInWithADFSIdp/v2.0";
+    options.Authority = "https://login.microsoftonline.com/a7cd5b59-9f45-477d-b7d6-60fc2dd177a1/v2.0";
     options.Audience = "2b64a7f1-5fae-420b-a5f7-7be79d54ba74";
     options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
     

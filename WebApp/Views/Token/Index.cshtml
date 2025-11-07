@@ -1,0 +1,92 @@
+@{
+    ViewData["Title"] = "Token Information";
+}
+
+<div class="container">
+    <h2>JWT Token Information</h2>
+    <p class="text-muted">View your current authentication tokens and claims</p>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary me-2" onclick="loadTokens()">Load All Tokens</button>
+                    <button class="btn btn-info me-2" onclick="loadIdToken()">Load ID Token</button>
+                    <button class="btn btn-success me-2" onclick="loadAccessToken()">Load Access Token</button>
+                    <button class="btn btn-secondary" onclick="clearResults()">Clear</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5>Token Details</h5>
+                </div>
+                <div class="card-body">
+                    <div id="tokenResults">
+                        <p class="text-muted">Click one of the buttons above to load token information</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function loadTokens() {
+            try {
+                const response = await fetch('/Token/Index');
+                const data = await response.json();
+                displayResults('All Tokens', data);
+            } catch (error) {
+                displayError('Error loading tokens: ' + error.message);
+            }
+        }
+
+        async function loadIdToken() {
+            try {
+                const response = await fetch('/Token/IdToken');
+                const data = await response.json();
+                displayResults('ID Token', data);
+            } catch (error) {
+                displayError('Error loading ID token: ' + error.message);
+            }
+        }
+
+        async function loadAccessToken() {
+            try {
+                const response = await fetch('/Token/AccessToken');
+                const data = await response.json();
+                displayResults('Access Token', data);
+            } catch (error) {
+                displayError('Error loading access token: ' + error.message);
+            }
+        }
+
+        function displayResults(title, data) {
+            const container = document.getElementById('tokenResults');
+            container.innerHTML = `
+                <h6>${title}</h6>
+                <pre class="bg-light p-3 border rounded" style="max-height: 500px; overflow-y: auto; font-size: 12px;">
+${JSON.stringify(data, null, 2)}
+                </pre>
+            `;
+        }
+
+        function displayError(message) {
+            const container = document.getElementById('tokenResults');
+            container.innerHTML = `
+                <div class="alert alert-danger" role="alert">
+                    ${message}
+                </div>
+            `;
+        }
+
+        function clearResults() {
+            document.getElementById('tokenResults').innerHTML = '<p class="text-muted">Click one of the buttons above to load token information</p>';
+        }
+    </script>
+}
