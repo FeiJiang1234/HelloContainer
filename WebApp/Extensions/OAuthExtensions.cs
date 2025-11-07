@@ -43,6 +43,8 @@ namespace HelloContainer.WebApp.Extensions
             options.ResponseType = oidcOptions.ResponseType;
             options.AuthenticationMethod = oidcOptions.AuthenticationMethod;
             options.UsePkce = true;
+            options.SaveTokens = true;
+            
             ConfigureScopes(oidcOptions, options);
         }
 
