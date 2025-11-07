@@ -1,30 +1,17 @@
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.UI;
+using HelloContainer.WebApp.Extensions;
 using HelloContainer.WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient<ContainerApiClient>(client =>
 {
-    var apiBaseUrl = builder.Configuration["ContainerApi:BaseUrl"];
-    client.BaseAddress = new Uri(apiBaseUrl);
+    client.BaseAddress = new Uri("https://localhost:7054");
 });
 
-builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
-    //.EnableTokenAcquisitionToCallDownstreamApi(new string[] { builder.Configuration["ContainerApi:Scope"]! })
-    //.AddInMemoryTokenCaches();
+builder.Services.AddContainerIdentity(builder.Configuration);
 
-builder.Services.AddControllersWithViews()
-    .AddMicrosoftIdentityUI();
-
+builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-
-builder.Services.AddAuthorization(options =>
-{
-    options.FallbackPolicy = options.DefaultPolicy;
-});
 
 var app = builder.Build();
 
