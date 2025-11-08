@@ -47,7 +47,7 @@ namespace HelloContainer.Api.OPA
                 if (allowAnony != null)
                     return true;
 
-                var userd = httpContext.User.FindFirst("userId")?.Value;
+                var userd = httpContext.User.FindFirst("sub")?.Value;
                 
                 if (string.IsNullOrEmpty(userd))
                 {

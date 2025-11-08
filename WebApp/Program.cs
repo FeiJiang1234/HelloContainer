@@ -8,11 +8,7 @@ builder.Services.AddHttpClient<ContainerApiClient>(client =>
     client.BaseAddress = new Uri("https://localhost:7054");
 });
 
-// 使用自定义 OIDC 配置
-builder.Services.AddOidc(options =>
-{
-    builder.Configuration.GetSection("Oidc").Bind(options);
-});
+builder.Services.AddContainerIdentity(builder.Configuration);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

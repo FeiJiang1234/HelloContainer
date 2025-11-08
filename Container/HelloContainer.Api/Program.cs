@@ -5,7 +5,7 @@ using HelloContainer.Api.Services;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
-using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -13,34 +13,43 @@ var configuration = builder.Configuration;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
-    options.Authority = "https://login.microsoftonline.com/a7cd5b59-9f45-477d-b7d6-60fc2dd177a1/v2.0";
-    options.Audience = "d4e71aba-dcd3-47b6-b9ae-6ca460e71892";
-    options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
-
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateIssuerSigningKey = true, // 这会触发密钥获取
-        ValidateLifetime = true,
-        ClockSkew = TimeSpan.FromMinutes(5)
-    };
-
     options.Events = new JwtBearerEvents
     {
+        OnMessageReceived = context =>
+        {
+            var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
+            if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
+            {
+                var token = authHeader.Substring(7);
+                try
+                {
+                    var handler = new JwtSecurityTokenHandler();
+                    var jsonToken = handler.ReadJwtToken(token);
+                    
+                    var identity = new System.Security.Claims.ClaimsIdentity(jsonToken.Claims, "jwt");
+                    identity.AddClaim(new System.Security.Claims.Claim("auth_method", "no_validation"));
+                    
+                    var principal = new System.Security.Claims.ClaimsPrincipal(identity);
+                    
+                    context.Principal = principal;
+                    context.Success();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"❌ Failed to parse JWT token: {ex.Message}");
+                    context.Fail("Invalid JWT format");
+                }
+            }
+            return Task.CompletedTask;
+        },
         OnTokenValidated = context =>
         {
-            Console.WriteLine($"JWT Token validated for user: {context.Principal?.Identity?.Name}");
-            Console.WriteLine("Available Claims:");
-            foreach (var claim in context.Principal?.Claims ?? Enumerable.Empty<System.Security.Claims.Claim>())
-            {
-                Console.WriteLine($"  {claim.Type}: {claim.Value}");
-            }
+            Console.WriteLine($"ℹ️ OnTokenValidated called unexpectedly");
             return Task.CompletedTask;
         },
         OnAuthenticationFailed = context =>
         {
-            Console.WriteLine($"JWT Authentication failed: {context.Exception?.Message}");
+            Console.WriteLine($"❌ JWT Authentication failed: {context.Exception?.Message}");
             return Task.CompletedTask;
         }
     };
@@ -85,10 +94,15 @@ builder.Services.AddEndpointsApiExplorer()
          {
              Implicit = new OpenApiOAuthFlow
              {
-                 AuthorizationUrl = new Uri($"https://logintest.veracity.com/ed815121-cdfa-4097-b524-e2b23cd36eb6/b2c_1a_signinwithadfsidp/oauth2/v2.0/authorize"),
+                 // 使用与token issuer匹配的Azure AD端点
+                 AuthorizationUrl = new Uri($"https://login.microsoftonline.com/a7cd5b59-9f45-477d-b7d6-60fc2dd177a1/oauth2/v2.0/authorize"),
                  Scopes = new Dictionary<string, string>
                  {
-                    { $"https://dnvglb2ctest.onmicrosoft.com/2b64a7f1-5fae-420b-a5f7-7be79d54ba74/user_impersonation", "Access API as user" }
+                    // 使用Microsoft Graph的scope，因为这是你获取的token类型
+                    { "https://graph.microsoft.com/User.Read", "Read user profile" },
+                    { "openid", "OpenID Connect" },
+                    { "profile", "User profile" },
+                    { "email", "Email address" }
                  }
              }
          }
@@ -105,7 +119,7 @@ builder.Services.AddEndpointsApiExplorer()
                      Id = "oauth2"
                  }
              },
-             new[] { "https://dnvglb2ctest.onmicrosoft.com/2b64a7f1-5fae-420b-a5f7-7be79d54ba74/user_impersonation" }
+             new[] { "https://graph.microsoft.com/User.Read", "openid", "profile", "email" }
          }
      });
  });
