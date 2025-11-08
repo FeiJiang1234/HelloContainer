@@ -13,12 +13,12 @@ public class ContainerFactory
         _containerRepository = containerRepository;
     }
 
-    public async Task<Result<Container>> CreateContainer(string name, double capacity)
+    public async Task<Result<Container>> CreateContainer(string name, double capacity, Guid createdBy)
     {
         var exists = (await _containerRepository.FindAsync(x => x.Name == name)).Any();
         if (exists)
             return Result.Failure<Container>(ContainerErrors.Conflict.NameExists(name));
 
-        return Container.Create(name, capacity);
+        return Container.Create(name, capacity, createdBy);
     }
 }

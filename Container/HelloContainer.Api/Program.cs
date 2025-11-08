@@ -57,7 +57,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddControllers().AddDWJsonOptions();
 builder.Services.AddJsonSerializerOptions();
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddOpaPolicyAuthorization();
 
 builder.Services.AddAuthorization(o =>

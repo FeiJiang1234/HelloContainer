@@ -59,6 +59,8 @@ public class ContainerApiClient
 
     public async Task<ContainerDto?> CreateContainerAsync(CreateContainerDto createDto)
     {
+        AddBearerToken();
+
         var json = JsonSerializer.Serialize(createDto);
         var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             

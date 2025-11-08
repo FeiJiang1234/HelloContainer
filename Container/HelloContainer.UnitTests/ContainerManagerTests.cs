@@ -21,11 +21,12 @@ namespace HelloContainer.UnitTests
         public async Task ComplexConnectionAndWaterDistribution_ShouldShareWaterEquallyAmongAllConnected()
         {
             // Arrange
-            var aResult = Container.Create("a", 100);
-            var bResult = Container.Create("b", 100);
-            var cResult = Container.Create("c", 100);
-            var dResult = Container.Create("d", 100);
-            var eResult = Container.Create("e", 100);
+            var createdBy = Guid.NewGuid();
+            var aResult = Container.Create("a", 100, createdBy);
+            var bResult = Container.Create("b", 100, createdBy);
+            var cResult = Container.Create("c", 100, createdBy);
+            var dResult = Container.Create("d", 100, createdBy);
+            var eResult = Container.Create("e", 100, createdBy);
 
             Assert.True(aResult.IsSuccess);
             Assert.True(bResult.IsSuccess);

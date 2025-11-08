@@ -12,6 +12,7 @@ namespace HelloContainer.Domain.ContainerAggregate
         public Capacity Capacity { get; private set; }
         public List<string> ConnectedContainerIdsRaw { get; private set; } = new();
         public bool IsDeleted { get; private set; }
+        public Guid CreatedBy { get; private set; }
 
         [NotMapped]
         public IList<Guid> ConnectedContainerIds
@@ -25,15 +26,16 @@ namespace HelloContainer.Domain.ContainerAggregate
         }
 
 
-        private Container(string name, Capacity capacity)
+        private Container(string name, Capacity capacity, Guid createdBy)
         {
             Name = name;
             Capacity = capacity;
             Amount = Amount.Create(0);
             ConnectedContainerIds = new List<Guid>();
+            CreatedBy = createdBy;
         }
 
-        public static Result<Container> Create(string name, double capacity)
+        public static Result<Container> Create(string name, double capacity, Guid createdBy)
         {
             if (string.IsNullOrWhiteSpace(name))
                 return Result.Failure<Container>(ContainerErrors.Validation.EmptyName);
@@ -41,7 +43,7 @@ namespace HelloContainer.Domain.ContainerAggregate
             if (capacity <= 0)
                 return Result.Failure<Container>(ContainerErrors.Validation.InvalidCapacity(capacity));
 
-            var container = new Container(name, Capacity.Create(capacity));
+            var container = new Container(name, Capacity.Create(capacity), createdBy);
             container.Raise(new ContainerCreatedDomainEvent(container.Id, name));
             return Result.Success(container);
         }

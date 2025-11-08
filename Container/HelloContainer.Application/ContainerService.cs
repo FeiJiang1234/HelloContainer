@@ -4,10 +4,10 @@ using HelloContainer.Domain.Abstractions;
 using HelloContainer.Domain.Services;
 using HelloContainer.SharedKernel;
 using Microsoft.Extensions.Caching.Distributed;
-using MassTransit.Internals.Caching;
 using System.Text.Json;
 using HelloContainer.Application.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http;
 
 namespace HelloContainer.Application
 {
@@ -23,10 +23,11 @@ namespace HelloContainer.Application
         private static readonly DistributedCacheEntryOptions CacheOptions = new() { 
             AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30) 
         };
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ContainerService(IContainerRepository containerRepository, IMapper mapper, IUnitOfWork unitOfWork, 
-            ContainerManager containerManager, ContainerFactory containerFactory, 
-            IDistributedCache distributedCache, IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public ContainerService(IContainerRepository containerRepository, IMapper mapper, IUnitOfWork unitOfWork,
+            ContainerManager containerManager, ContainerFactory containerFactory,
+            IDistributedCache distributedCache, IOptions<JsonSerializerOptions> jsonSerializerOptions, IHttpContextAccessor httpContextAccessor)
         {
             _containerRepository = containerRepository;
             _mapper = mapper;
@@ -35,11 +36,14 @@ namespace HelloContainer.Application
             _containerFactory = containerFactory;
             _distributedCache = distributedCache;
             _jsonSerializerOptions = jsonSerializerOptions.Value;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<Result<ContainerReadDto>> CreateContainer(CreateContainerDto createDto)
         {
-            var containerResult = await _containerFactory.CreateContainer(createDto.Name, createDto.Capacity);
+            var userd = _httpContextAccessor.HttpContext.User.FindFirst("sub")?.Value;
+
+            var containerResult = await _containerFactory.CreateContainer(createDto.Name, createDto.Capacity, Guid.Parse(userd));
             if (containerResult.IsFailure)
                 return Result.Failure<ContainerReadDto>(containerResult.Error);
 

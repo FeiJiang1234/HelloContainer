@@ -11,7 +11,7 @@ namespace HelloContainer.UnitTests
         public void Create_WithValidInput_ShouldSucceed()
         {
             // Act
-            var result = Container.Create("TestContainer", 100);
+            var result = Container.Create("TestContainer", 100, Guid.NewGuid());
 
             // Assert
             Assert.True(result.IsSuccess);
@@ -25,7 +25,7 @@ namespace HelloContainer.UnitTests
         public void Create_WithEmptyName_ShouldFail()
         {
             // Act
-            var result = Container.Create("", 100);
+            var result = Container.Create("", 100, Guid.NewGuid());
 
             // Assert
             Assert.True(result.IsFailure);
@@ -36,7 +36,7 @@ namespace HelloContainer.UnitTests
         public void Create_WithZeroCapacity_ShouldFail()
         {
             // Act
-            var result = Container.Create("TestContainer", 0);
+            var result = Container.Create("TestContainer", 0, Guid.NewGuid());
 
             // Assert
             Assert.True(result.IsFailure);
@@ -47,7 +47,7 @@ namespace HelloContainer.UnitTests
         public void Create_WithNegativeCapacity_ShouldFail()
         {
             // Act
-            var result = Container.Create("TestContainer", -10);
+            var result = Container.Create("TestContainer", -10, Guid.NewGuid());
 
             // Assert
             Assert.True(result.IsFailure);
@@ -58,7 +58,7 @@ namespace HelloContainer.UnitTests
         public void ConnectTo_EmptyGuid_ShouldThrowInvalidConnectionException()
         {
             // Arrange
-            var containerResult = Container.Create("TestContainer", 100);
+            var containerResult = Container.Create("TestContainer", 100, Guid.NewGuid());
             Assert.True(containerResult.IsSuccess);
 
             // Act & Assert
@@ -69,7 +69,7 @@ namespace HelloContainer.UnitTests
         public void ConnectTo_Self_ShouldThrowInvalidConnectionException()
         {
             // Arrange
-            var containerResult = Container.Create("TestContainer", 100);
+            var containerResult = Container.Create("TestContainer", 100, Guid.NewGuid());
             Assert.True(containerResult.IsSuccess);
 
             // Act & Assert
@@ -80,8 +80,8 @@ namespace HelloContainer.UnitTests
         public void ConnectTo_AlreadyConnected_ShouldThrowInvalidConnectionException()
         {
             // Arrange
-            var containerAResult = Container.Create("A", 100);
-            var containerBResult = Container.Create("B", 100);
+            var containerAResult = Container.Create("A", 100, Guid.NewGuid());
+            var containerBResult = Container.Create("B", 100, Guid.NewGuid());
             Assert.True(containerAResult.IsSuccess);
             Assert.True(containerBResult.IsSuccess);
 
@@ -97,8 +97,8 @@ namespace HelloContainer.UnitTests
         public void ConnectTo_WhenTwoContainersConnected_ShouldAddConnection()
         {
             // Arrange
-            var aResult = Container.Create("a", 100);
-            var bResult = Container.Create("b", 100);
+            var aResult = Container.Create("a", 100, Guid.NewGuid());
+            var bResult = Container.Create("b", 100, Guid.NewGuid());
 
             var a = aResult.Value;
             var b = bResult.Value;
@@ -114,8 +114,8 @@ namespace HelloContainer.UnitTests
         public void Disconnect_WhenContainersConnected_ShouldRemoveConnection()
         {
             // Arrange
-            var aResult = Container.Create("a", 100);
-            var bResult = Container.Create("b", 100);
+            var aResult = Container.Create("a", 100, Guid.NewGuid());
+            var bResult = Container.Create("b", 100, Guid.NewGuid());
 
             var a = aResult.Value;
             var b = bResult.Value;
@@ -133,8 +133,8 @@ namespace HelloContainer.UnitTests
         public void Disconnect_WhenNotConnected_ShouldThrowInvalidConnectionException()
         {
             // Arrange
-            var aResult = Container.Create("a", 100);
-            var bResult = Container.Create("b", 100);
+            var aResult = Container.Create("a", 100, Guid.NewGuid());
+            var bResult = Container.Create("b", 100, Guid.NewGuid());
             var a = aResult.Value;
             var b = bResult.Value;
 
