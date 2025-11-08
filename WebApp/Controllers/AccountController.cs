@@ -26,10 +26,8 @@ namespace HelloContainer.WebApp.Controllers
         [Authorize]
         public async Task<IActionResult> Logout()
         {
-            // 清除本地 Cookie
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             
-            // 从 OIDC 提供商注销
             return SignOut(new AuthenticationProperties 
             { 
                 RedirectUri = Url.Action("Index", "Home") 
