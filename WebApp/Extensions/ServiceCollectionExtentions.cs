@@ -9,7 +9,7 @@ namespace HelloContainer.WebApp.Extensions
         {
             var authority = "https://logintest.veracity.com/tfp/ed815121-cdfa-4097-b524-e2b23cd36eb6/B2C_1A_SignInWithADFSIdp/v2.0";
             var clientId = "566af909-a1be-4bb9-86d7-89cec0d72736";
-            var clientSecret = "6bX8Q~ZZNflxZMn6SxyUP1Vq5bI5nEP68kCFybWr";
+            var clientSecret = "";
             var scope = "https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation";
 
             services.AddAuthentication(options =>
