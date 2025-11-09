@@ -1,14 +1,10 @@
 using HelloContainer.WebApp.Extensions;
-using HelloContainer.WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
-builder.Services.AddHttpClient<ContainerApiClient>(client =>
-{
-    client.BaseAddress = new Uri("https://localhost:7054");
-});
-
-builder.Services.AddContainerIdentity(builder.Configuration);
+builder.Services.ConfigureApiService(configuration);
+builder.Services.AddContainerIdentity(configuration);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

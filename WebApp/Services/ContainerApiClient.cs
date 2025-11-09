@@ -1,7 +1,5 @@
 using System.Text.Json;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Authentication;
-using System.Net.Http.Headers;
 
 namespace HelloContainer.WebApp.Services;
 
@@ -16,19 +14,8 @@ public class ContainerApiClient
         _httpContextAccessor = httpContextAccessor;
     }
 
-    private void AddBearerToken()
-    {
-        var accessToken = _httpContextAccessor.HttpContext?.GetTokenAsync("access_token").Result;
-        if (!string.IsNullOrEmpty(accessToken))
-        {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-        }
-    }
-
     public async Task<List<ContainerDto>?> GetContainersAsync(string? searchKeyword = null)
     {
-        AddBearerToken();
-
         var url = "api/containers";
         if (!string.IsNullOrEmpty(searchKeyword))
         {
@@ -59,8 +46,6 @@ public class ContainerApiClient
 
     public async Task<ContainerDto?> CreateContainerAsync(CreateContainerDto createDto)
     {
-        AddBearerToken();
-
         var json = JsonSerializer.Serialize(createDto);
         var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             
