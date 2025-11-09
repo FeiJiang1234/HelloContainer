@@ -2,16 +2,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace HelloContainer.WebApp.Controllers
 {
     [Authorize]
     public class TokenController : Controller
     {
-        /// <summary>
-        /// 显示当前用户的令牌信息
-        /// </summary>
         public async Task<IActionResult> Index()
         {
             var authResult = await HttpContext.AuthenticateAsync();
@@ -34,9 +30,6 @@ namespace HelloContainer.WebApp.Controllers
             return Json(tokenInfo);
         }
 
-        /// <summary>
-        /// 解析并显示 ID Token 的详细信息
-        /// </summary>
         public async Task<IActionResult> IdToken()
         {
             var authResult = await HttpContext.AuthenticateAsync();
@@ -71,9 +64,6 @@ namespace HelloContainer.WebApp.Controllers
             }
         }
 
-        /// <summary>
-        /// 解析并显示 Access Token 的详细信息
-        /// </summary>
         public async Task<IActionResult> AccessToken()
         {
             var authResult = await HttpContext.AuthenticateAsync();

@@ -14,6 +14,11 @@ namespace HelloContainer.WebApp.Extensions
                 client.BaseAddress = new Uri(apiOptions.ContainerApiBaseUri!);
             }).AddHttpMessageHandler(sp => new BaseHttpClientHandler(sp.GetRequiredService<IHttpContextAccessor>()));
 
+            services.AddHttpClient<UserApiClient>(client =>
+            {
+                client.BaseAddress = new Uri(apiOptions.UserApiBaseUri!);
+            });
+
             return services;
         }
 

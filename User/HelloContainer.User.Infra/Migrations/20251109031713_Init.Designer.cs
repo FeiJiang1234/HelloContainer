@@ -12,7 +12,7 @@ using Todo.Infrastructure;
 namespace HelloContainer.User.Infra.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20251030050611_Init")]
+    [Migration("20251109031713_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -32,6 +32,10 @@ namespace HelloContainer.User.Infra.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

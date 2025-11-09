@@ -5,6 +5,6 @@ namespace HelloContainer.Application.Authorization
 {
     public interface IUserRoleRetriever
     {
-        Task<UserRole> Retrieve(Guid userId);
+        Task<IEnumerable<UserRoleLookupEntry>> Retrieve(Guid userId, string name, IEnumerable<UserRoleScope> lookupScopes);
     }
 }

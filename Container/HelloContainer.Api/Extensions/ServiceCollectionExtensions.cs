@@ -12,16 +12,28 @@ using HelloContainer.Application;
 using MassTransit;
 using HelloContainer.Api.Settings;
 using Microsoft.Extensions.Options;
-using HelloContainer.Api.Services;
 using HelloContainer.Application.Authorization;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using HelloContainer.Api.Options;
+using HelloContainer.Application.Services;
 
 namespace HelloContainer.Api.Extensions
 {
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection ConfigureApiService(this IServiceCollection services, IConfiguration configuration)
+        {
+            var apiOptions = configuration.GetSection("ApiInfo").Get<ApiOptions>()!;
+            services.AddHttpClient<UserApiClient>(client =>
+            {
+                client.BaseAddress = new Uri(apiOptions.UserApiBaseUri!);
+            });
+
+            return services;
+        }
+
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             services.AddCors(options =>
@@ -92,8 +104,7 @@ namespace HelloContainer.Api.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ContainerFactory>();
             services.AddScoped<AlertService>();
-            services.AddSingleton<IUserService, UserService>();
-            services.AddSingleton<IUserRoleRetriever, UserRolesRetriever>();
+            services.AddScoped<IUserRoleRetriever, UserRolesRetriever>();
 
             return services;
         }

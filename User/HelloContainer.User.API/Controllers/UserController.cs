@@ -22,19 +22,21 @@ namespace HelloContainer.User.API.Controllers
             return await _userService.GetUsers();
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<UserReadDto> GetUser([FromRoute] Guid id)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<UserReadDto?>> GetUser([FromRoute] Guid id)
         {
-            return null;
+            var user = await _userService.GetUser(id);
+            return user;
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<UserReadDto>> CreateTodo([FromBody] UserWriteDto writeDto)
+        public async Task<ActionResult<UserReadDto>> Create([FromBody] UserWriteDto writeDto)
         {
-            var todo = await _userService.CreateUser(writeDto.name);
-            return CreatedAtAction(nameof(GetUser), todo);
+            var user = await _userService.CreateUser(writeDto.id, writeDto.name, writeDto.role);
+            return CreatedAtAction(nameof(GetUser), new { id = user.id }, user);
         }
     }
 }

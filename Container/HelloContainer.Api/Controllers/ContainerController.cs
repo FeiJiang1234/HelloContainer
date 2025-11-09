@@ -19,7 +19,6 @@ namespace HelloContainer.Api.Controllers
         }
 
         [HttpPost]
-        [OpaAuthorize(IncludeRequestPayloadInAuthContext = true)]
         public async Task<ActionResult<ContainerReadDto>> CreateContainer(CreateContainerDto createDto)
         {
             var result = await _containerService.CreateContainer(createDto);
@@ -44,6 +43,7 @@ namespace HelloContainer.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [OpaScopeDescribe(Scope = RoleScopeTypes.Container, BindingType = ParameterBindingType.InRoute, BindingKey = "id")]
         public async Task<IActionResult> DeleteContainer(Guid id)
         {
             await _containerService.DeleteContainer(id);

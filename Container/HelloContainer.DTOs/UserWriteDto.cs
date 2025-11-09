@@ -1,4 +1,4 @@
-﻿namespace HelloContainer.User.Application.Dtos
+﻿namespace HelloContainer.DTOs
 {
     public record UserWriteDto(Guid id, string name, string role);
 }

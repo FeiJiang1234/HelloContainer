@@ -2,5 +2,3 @@
 {
     public record UserRole(string RoleName);
 }
-
-

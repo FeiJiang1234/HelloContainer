@@ -1,4 +1,5 @@
-﻿using HelloContainer.Application.Authorization;
+﻿using HelloContainer.Api.Authorization;
+using HelloContainer.Application.Authorization;
 using HelloContainer.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
@@ -47,14 +48,30 @@ namespace HelloContainer.Api.OPA
                 if (allowAnony != null)
                     return true;
 
-                var userd = httpContext.User.FindFirst("sub")?.Value;
-                
-                if (string.IsNullOrEmpty(userd))
+                var scopeParams = new List<UserRoleScope>();
+                var attrs = httpContext.GetEndpoint()?.Metadata.GetOrderedMetadata<OpaScopeDescribeAttribute>();
+                if (attrs != null)
+                {
+                    foreach (var attr in attrs)
+                    {
+                        var values = await ExtractScopeRefValues(httpContext, attr);
+
+                        if (values.Any())
+                        {
+                            if (!string.IsNullOrEmpty(attr.Scope))
+                                scopeParams.AddRange(values.Select(val => new UserRoleScope(attr.Scope!, val))!);
+                        }
+                    }
+                }
+
+                var userId = httpContext.User.FindFirst("sub")?.Value;
+                var userName = httpContext.User.FindFirst("name")?.Value;
+                if (string.IsNullOrEmpty(userId))
                 {
                     return false;
                 }
                 
-                var role = await _rolesRetriever.Retrieve(Guid.Parse(userd));
+                var role = await _rolesRetriever.Retrieve(Guid.Parse(userId), userName, scopeParams);
 
                 var allow = await EvalOpaPolicyAsync(
                        role,
@@ -71,8 +88,22 @@ namespace HelloContainer.Api.OPA
             return false;
         }
 
+        private async Task<IEnumerable<string>> ExtractScopeRefValues(HttpContext httpContext, OpaScopeDescribeAttribute opaScopeAttr)
+        {
+            switch (opaScopeAttr.BindingType)
+            {
+                case ParameterBindingType.InRoute when
+                    !string.IsNullOrEmpty(opaScopeAttr.BindingKey)
+                    && httpContext.GetRouteData().Values.TryGetValue(opaScopeAttr.BindingKey, out var value)
+                    && value != null:
+                    return new[] { value.ToString() }!;
+            }
+
+            return Enumerable.Empty<string>();
+        }
+
         internal async Task<bool?> EvalOpaPolicyAsync(
-            UserRole role,
+            IEnumerable<UserRoleLookupEntry> roles,
             HttpContext httpContext,
             OpaPolicyRequirement requirement,
             bool includePayloadInContext = false,
@@ -117,7 +148,7 @@ namespace HelloContainer.Api.OPA
                         Args = args,
                         Context = new
                         {
-                            Role = role,
+                            RoleLookup = roles,
                             Payload = requestPayload,
                         },
                     }

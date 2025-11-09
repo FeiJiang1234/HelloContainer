@@ -8,17 +8,29 @@ namespace HelloContainer.WebApp.Controllers;
 public class HomeController : Controller
 {
     private readonly ContainerApiClient _containerApiClient;
+    private readonly UserApiClient _userApiClient;
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(ContainerApiClient containerApiClient, ILogger<HomeController> logger)
+    public HomeController(ContainerApiClient containerApiClient, ILogger<HomeController> logger, UserApiClient userApiClient)
     {
         _containerApiClient = containerApiClient;
         _logger = logger;
+        _userApiClient = userApiClient;
     }
 
     public async Task<IActionResult> Index(string? searchKeyword)
     {
         var containers = await _containerApiClient.GetContainersAsync(searchKeyword);
+
+        var userIds = containers.Select(x => x.CreatedBy).ToHashSet();
+        var selectUserTasks = userIds.Select(id => _userApiClient.GetUserByIdAsync(id));
+        var users = await Task.WhenAll(selectUserTasks);
+
+        foreach (var c in containers)
+        {
+            c.CreatedByName = users.First(x => x.id == c.CreatedBy).name;
+        }
+
         ViewBag.SearchKeyword = searchKeyword;
         return View(containers ?? new List<ContainerDto>());
     }

@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq.Expressions;
 using Todo.Domain.Abstractions;
 
 namespace Todo.Infrastructure
@@ -20,6 +22,16 @@ namespace Todo.Infrastructure
         public async Task<IEnumerable<T>> GetAll()
         {
            return await _dbContext.Set<T>().ToListAsync();
+        }
+
+        public async Task<T?> GetAsync(Expression<Func<T, bool>> predict, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Set<T>().FirstOrDefaultAsync(predict, cancellationToken);
+        }
+
+        public void Update(T entity)
+        {
+            _dbContext.Update(entity);
         }
     }
 }

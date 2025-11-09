@@ -18,16 +18,22 @@ namespace Todo.Application
         public async Task<IEnumerable<UserReadDto>> GetUsers()
         {
             var users = await _userRepository.GetAll();
-            return users.Select(x => new UserReadDto(x.Id, x.Name));
+            return users.Select(x => new UserReadDto(x.Id, x.Name, x.Role));
         }
 
-        public async Task<UserReadDto> CreateUser(string title)
+        public async Task<UserReadDto?> GetUser(Guid id)
         {
-            var user = User.Create(title);
+            var user = await _userRepository.GetAsync(u => u.Id == id);
+            return user == null ? null : new UserReadDto(user.Id, user.Name, user.Role);
+        }
+
+        public async Task<UserReadDto> CreateUser(Guid id, string name, string role)
+        {
+            var user = User.Create(id, name, role);
             _userRepository.Add(user);
             await _uow.SaveChangesAsync();
 
-            return new UserReadDto(user.Id, user.Name);
+            return new UserReadDto(user.Id, user.Name, user.Role);
         }
     }
 }

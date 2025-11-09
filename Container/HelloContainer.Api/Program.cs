@@ -1,7 +1,6 @@
 ﻿using HelloContainer.Api.Extensions;
 using HelloContainer.Api.Middleware;
 using HelloContainer.Api.OPA;
-using HelloContainer.Api.Services;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
@@ -50,11 +49,9 @@ builder.Services.AddEndpointsApiExplorer()
          {
              Implicit = new OpenApiOAuthFlow
              {
-                 // 使用与token issuer匹配的Azure AD端点
                  AuthorizationUrl = new Uri($"https://login.microsoftonline.com/a7cd5b59-9f45-477d-b7d6-60fc2dd177a1/oauth2/v2.0/authorize"),
                  Scopes = new Dictionary<string, string>
                  {
-                    // 使用Microsoft Graph的scope，因为这是你获取的token类型
                     { "https://graph.microsoft.com/User.Read", "Read user profile" },
                     { "openid", "OpenID Connect" },
                     { "profile", "User profile" },
@@ -80,14 +77,7 @@ builder.Services.AddEndpointsApiExplorer()
      });
  });
 
-
-// Add OPA services
-builder.Services.AddHttpClient<IOpaService, OpaService>(client =>
-{
-    var opaBaseUrl = configuration["Opa:BaseUrl"] ?? "http://localhost:8181";
-    client.BaseAddress = new Uri(opaBaseUrl);
-});
-
+builder.Services.ConfigureApiService(configuration);
 builder.Services.AddServices(configuration, builder.Environment);
 
 var app = builder.Build();
@@ -100,7 +90,6 @@ if (app.Environment.IsDevelopment())
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "HelloContainer API V1");
         c.OAuthClientId(configuration["Swagger:OAuth:ClientId"]);
-        c.OAuthUsePkce();
         c.OAuthScopeSeparator(" ");
     });
 }

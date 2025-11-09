@@ -6,12 +6,10 @@ namespace HelloContainer.WebApp.Services;
 public class ContainerApiClient
 {
     private readonly HttpClient _httpClient;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public ContainerApiClient(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+    public ContainerApiClient(HttpClient httpClient)
     {
         _httpClient = httpClient;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<List<ContainerDto>?> GetContainersAsync(string? searchKeyword = null)
@@ -35,8 +33,6 @@ public class ContainerApiClient
     public async Task<ContainerDto?> GetContainerByIdAsync(Guid id)
     {
         var response = await _httpClient.GetAsync($"api/containers/{id}");
-        response.EnsureSuccessStatusCode();
-
         var json = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<ContainerDto>(json, new JsonSerializerOptions
         {
@@ -50,8 +46,6 @@ public class ContainerApiClient
         var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             
         var response = await _httpClient.PostAsync("api/containers", content);
-        response.EnsureSuccessStatusCode();
-
         var responseJson = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<ContainerDto>(responseJson, new JsonSerializerOptions
         {
@@ -66,8 +60,6 @@ public class ContainerApiClient
         var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             
         var response = await _httpClient.PostAsync($"api/containers/{id}/water", content);
-        response.EnsureSuccessStatusCode();
-
         var responseJson = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<ContainerDto>(responseJson, new JsonSerializerOptions
         {
@@ -87,8 +79,7 @@ public class ContainerApiClient
         var json = JsonSerializer.Serialize(connectDto);
         var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             
-        var response = await _httpClient.PostAsync("api/containers/connections", content);
-        response.EnsureSuccessStatusCode();
+        await _httpClient.PostAsync("api/containers/connections", content);
     }
 
     public async Task DisconnectContainersAsync(Guid sourceId, Guid targetId)
@@ -97,8 +88,7 @@ public class ContainerApiClient
         var json = JsonSerializer.Serialize(disconnectDto);
         var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             
-        var response = await _httpClient.PostAsync("api/containers/disconnections", content);
-        response.EnsureSuccessStatusCode();
+        await _httpClient.PostAsync("api/containers/disconnections", content);
     }
 }
 
@@ -111,6 +101,9 @@ public class ContainerDto
     public List<Guid> ConnectedContainerIds { get; set; } = new();
     public double FillPercentage => Capacity > 0 ? Amount / Capacity : 0;
     public bool IsFull => FillPercentage >= 1.0;
+    public Guid CreatedBy { get; set; }
+    public string CreatedByName { get; set; }
+
 }
 
 public class CreateContainerDto
