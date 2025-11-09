@@ -20,11 +20,25 @@ DELETE_Container_DeleteContainer_1 {
 	input.method == "DELETE"
 	containerId := input.args[0]
 	input.path == ["containers", containerId]
-	is_admin_role(input.context)
+	is_admin_or_container_owner(input.context, containerId)
 }
 
-is_admin_role(context) {
+is_admin_or_container_owner(context, containerId) {
 	some entry in context.roleLookup
 	entry.lookupScope.scope == "user"
-	entry.lookupResult.roleName == "administrator"
+	is_admin_role(entry.lookupResult)
+}
+
+is_admin_or_container_owner(context, containerId) {
+	some entry in context.roleLookup
+	entry.lookupScope.scope == "container"
+	is_owner_role(entry.lookupResult)
+}
+
+is_owner_role(role) {
+	role.roleName == "owner"
+}
+
+is_admin_role(role) {
+	role.roleName == "administrator"
 }
