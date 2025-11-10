@@ -9,9 +9,6 @@ namespace HelloContainer.WebApp.Controllers
     [AllowAnonymous]
     public class AccountController : Controller
     {
-        /// <summary>
-        /// 登录
-        /// </summary>
         public IActionResult SignIn()
         {
             return Challenge(new AuthenticationProperties 
@@ -20,9 +17,6 @@ namespace HelloContainer.WebApp.Controllers
             }, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
-        /// <summary>
-        /// 注销
-        /// </summary>
         [Authorize]
         public async Task<IActionResult> Logout()
         {

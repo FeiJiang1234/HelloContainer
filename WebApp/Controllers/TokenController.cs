@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace HelloContainer.WebApp.Controllers
@@ -33,8 +34,9 @@ namespace HelloContainer.WebApp.Controllers
         public async Task<IActionResult> IdToken()
         {
             var authResult = await HttpContext.AuthenticateAsync();
-            var idToken = authResult.Properties?.GetTokenValue("id_token");
-            
+            var idToken = authResult.Properties?.GetTokenValue(OpenIdConnectParameterNames.IdToken);
+            var idToken2 = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.IdToken);
+
             if (string.IsNullOrEmpty(idToken))
             {
                 return Json(new { Error = "No ID token found" });

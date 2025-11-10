@@ -18,5 +18,9 @@
     <ProjectReference Include="..\SharedKernel\HelloContainer.SharedKernel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ClientApp\" />
+  </ItemGroup>
+
 </Project>
 

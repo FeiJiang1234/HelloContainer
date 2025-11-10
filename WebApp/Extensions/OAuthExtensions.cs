@@ -23,11 +23,12 @@ namespace HelloContainer.WebApp.Extensions
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, o =>
             {
-                o.CallbackPath = oidcOptions.CallbackPath;
+                o.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 o.Authority = oidcOptions.Authority;
-                o.ResponseType = oidcOptions.ResponseType;
                 o.ClientId = oidcOptions.ClientId;
                 o.ClientSecret = oidcOptions.ClientSecret;
+                o.CallbackPath = oidcOptions.CallbackPath;
+                o.ResponseType = oidcOptions.ResponseType;
                 o.Scope.Clear();
                 foreach (var scope in oidcOptions.Scope)
                 {
