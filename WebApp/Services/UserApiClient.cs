@@ -1,5 +1,5 @@
 ﻿using HelloContainer.WebApp.Dtos;
-using System.Text.Json;
+using HelloContainer.SharedKernel;
 
 namespace HelloContainer.WebApp.Services
 {
@@ -14,15 +14,7 @@ namespace HelloContainer.WebApp.Services
 
         public async Task<UserReadDto?> GetUserByIdAsync(Guid id)
         {
-            var response = await _httpClient.GetAsync($"api/users/{id}");
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-
-            var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<UserReadDto>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            return await _httpClient.GetAsync<UserReadDto>($"api/users/{id}");
         }
     }
 }

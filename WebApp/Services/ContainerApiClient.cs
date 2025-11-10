@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.ComponentModel.DataAnnotations;
+using HelloContainer.SharedKernel;
 
 namespace HelloContainer.WebApp.Services;
 
@@ -20,37 +21,17 @@ public class ContainerApiClient
             url += $"?searchKeyword={Uri.EscapeDataString(searchKeyword)}";
         }
 
-        var response = await _httpClient.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-
-        var json = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<List<ContainerDto>>(json, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
+        return await _httpClient.GetAsync<List<ContainerDto>>(url);
     }
 
     public async Task<ContainerDto?> GetContainerByIdAsync(Guid id)
     {
-        var response = await _httpClient.GetAsync($"api/containers/{id}");
-        var json = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<ContainerDto>(json, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
+        return await _httpClient.GetAsync<ContainerDto>($"api/containers/{id}");
     }
 
     public async Task<ContainerDto?> CreateContainerAsync(CreateContainerDto createDto)
     {
-        var json = JsonSerializer.Serialize(createDto);
-        var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-            
-        var response = await _httpClient.PostAsync("api/containers", content);
-        var responseJson = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<ContainerDto>(responseJson, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
+        return await _httpClient.PostAsync<CreateContainerDto, ContainerDto>($"api/containers", createDto);
     }
 
     public async Task<ContainerDto?> AddWaterAsync(Guid id, decimal amount)
