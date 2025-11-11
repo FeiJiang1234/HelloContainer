@@ -149,7 +149,7 @@ namespace HelloContainer.Api.OPA
                         Context = new
                         {
                             RoleLookup = roles,
-                            Payload = requestPayload,
+                            Payload = requestPayload
                         },
                     }
                 };
