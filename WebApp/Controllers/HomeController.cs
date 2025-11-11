@@ -52,7 +52,7 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddWater(Guid id, decimal amount)
+    public async Task<IActionResult> AddWater(Guid id, double amount)
     {
         await _containerApiClient.AddWaterAsync(id, amount);
         return RedirectToAction(nameof(Index));

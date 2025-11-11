@@ -8,7 +8,7 @@ namespace HelloContainer.WebApp.Extensions
     {
         public static AuthenticationBuilder AddOidc(this IServiceCollection services, Action<OpenIdConnectOptions> oidcSetupAction)
         {
-            OpenIdConnectOptions oidcOptions = new OpenIdConnectOptions();
+            var oidcOptions = new OpenIdConnectOptions();
             oidcSetupAction(oidcOptions);
             return services.AddOidc(oidcOptions);
         }

@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Net.Http;
+using System.Text.Json;
 
 namespace HelloContainer.SharedKernel
 {
@@ -32,6 +33,13 @@ namespace HelloContainer.SharedKernel
             {
                 PropertyNameCaseInsensitive = true
             });
+        }
+
+        public static async Task PostAsync<T>(this HttpClient httpClient, string url, T dto)
+        {
+            var json = JsonSerializer.Serialize(dto);
+            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            await httpClient.PostAsync(url, content);
         }
     }
 }

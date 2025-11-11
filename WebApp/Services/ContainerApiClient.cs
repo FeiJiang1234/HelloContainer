@@ -1,6 +1,6 @@
-using System.Text.Json;
 using System.ComponentModel.DataAnnotations;
 using HelloContainer.SharedKernel;
+using HelloContainer.WebApp.Dtos;
 
 namespace HelloContainer.WebApp.Services;
 
@@ -34,18 +34,10 @@ public class ContainerApiClient
         return await _httpClient.PostAsync<CreateContainerDto, ContainerDto>($"api/containers", createDto);
     }
 
-    public async Task<ContainerDto?> AddWaterAsync(Guid id, decimal amount)
+    public async Task<ContainerDto?> AddWaterAsync(Guid id, double amount)
     {
-        var addWaterDto = new { Amount = amount };
-        var json = JsonSerializer.Serialize(addWaterDto);
-        var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-            
-        var response = await _httpClient.PostAsync($"api/containers/{id}/water", content);
-        var responseJson = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<ContainerDto>(responseJson, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
+        var addWaterDto = new AddWaterDto(amount);
+        return await _httpClient.PostAsync<AddWaterDto, ContainerDto>($"api/containers/{id}/water", addWaterDto);
     }
 
     public async Task DeleteContainerAsync(Guid id)
@@ -56,20 +48,14 @@ public class ContainerApiClient
 
     public async Task ConnectContainersAsync(Guid sourceId, Guid targetId)
     {
-        var connectDto = new { SourceContainerId = sourceId, TargetContainerId = targetId };
-        var json = JsonSerializer.Serialize(connectDto);
-        var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-            
-        await _httpClient.PostAsync("api/containers/connections", content);
+        var connectDto = new ConnectContainersDto(sourceId, targetId);
+        await _httpClient.PostAsync("api/containers/connections", connectDto);
     }
 
     public async Task DisconnectContainersAsync(Guid sourceId, Guid targetId)
     {
-        var disconnectDto = new { SourceContainerId = sourceId, TargetContainerId = targetId };
-        var json = JsonSerializer.Serialize(disconnectDto);
-        var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-            
-        await _httpClient.PostAsync("api/containers/disconnections", content);
+        var disconnectDto = new DisconnectContainersDto(sourceId, targetId);
+        await _httpClient.PostAsync("api/containers/disconnections", disconnectDto);
     }
 }
 
