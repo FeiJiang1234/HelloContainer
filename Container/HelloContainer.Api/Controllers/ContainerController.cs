@@ -51,9 +51,11 @@ namespace HelloContainer.Api.Controllers
         }
 
         [HttpPost("{id}/water")]
+        [OpaAuthorize(IncludeRequestPayloadInAuthContext = true)]
+        [OpaScopeDescribe(Scope = RoleScopeTypes.Container, BindingType = ParameterBindingType.InBody, BindingKey = "containerId")]
         public async Task<ActionResult<ContainerReadDto>> AddWater(Guid id, [FromBody] AddWaterDto addWaterDto)
         {
-            var container = await _containerService.AddWater(id, addWaterDto.Amount);
+            var container = await _containerService.AddWater(addWaterDto.containerId, addWaterDto.Amount);
             return Ok(container);
         }
 

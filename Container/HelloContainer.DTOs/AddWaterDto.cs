@@ -1,3 +1,3 @@
 namespace HelloContainer.DTOs;
 
-public record AddWaterDto(double Amount);
+public record AddWaterDto(Guid containerId, double Amount);

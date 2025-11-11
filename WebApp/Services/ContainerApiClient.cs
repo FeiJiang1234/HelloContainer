@@ -36,7 +36,7 @@ public class ContainerApiClient
 
     public async Task<ContainerDto?> AddWaterAsync(Guid id, double amount)
     {
-        var addWaterDto = new AddWaterDto(amount);
+        var addWaterDto = new AddWaterDto(id, amount);
         return await _httpClient.PostAsync<AddWaterDto, ContainerDto>($"api/containers/{id}/water", addWaterDto);
     }
 

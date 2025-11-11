@@ -1,4 +1,4 @@
 ﻿namespace HelloContainer.WebApp.Dtos
 {
-    public record AddWaterDto(double Amount);
+    public record AddWaterDto(Guid containerId, double Amount);
 }

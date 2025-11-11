@@ -1,4 +1,5 @@
-﻿using HelloContainer.DTOs;
+﻿using HelloContainer.Domain.ContainerAggregate;
+using HelloContainer.DTOs;
 using HelloContainer.IntegrationTests.Fixtures;
 using System.Net.Http.Json;
 
@@ -28,7 +29,7 @@ namespace HelloContainer.IntegrationTests.Services
 
         public static async Task<ContainerReadDto?> AddWater(this HelloContainerFixture fixture, Guid id, double amount)
         {
-            var addWaterDto = new AddWaterDto(amount);
+            var addWaterDto = new AddWaterDto(id, amount);
             var response = await fixture.Client.PostAsJsonAsync($"/api/containers/{id}/water", addWaterDto);
 
             return await response.Content.ReadFromJsonAsync<ContainerReadDto>();

@@ -21,7 +21,14 @@ public class HomeController : Controller
     public async Task<IActionResult> Index(string? searchKeyword)
     {
         var containers = await _containerApiClient.GetContainersAsync(searchKeyword);
+        await SetCreatedBy(containers);
 
+        ViewBag.SearchKeyword = searchKeyword;
+        return View(containers ?? new List<ContainerDto>());
+    }
+
+    private async Task SetCreatedBy(List<ContainerDto>? containers)
+    {
         var userIds = containers.Select(x => x.CreatedBy).ToHashSet();
         var selectUserTasks = userIds.Select(id => _userApiClient.GetUserByIdAsync(id));
         var users = await Task.WhenAll(selectUserTasks);
@@ -30,9 +37,6 @@ public class HomeController : Controller
         {
             c.CreatedByName = users.First(x => x.id == c.CreatedBy).name;
         }
-
-        ViewBag.SearchKeyword = searchKeyword;
-        return View(containers ?? new List<ContainerDto>());
     }
 
     [HttpPost]

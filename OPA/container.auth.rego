@@ -31,6 +31,8 @@ DELETE_Container_DeleteContainer_1 {
 default POST_Container_AddWater_1 = false
 POST_Container_AddWater_1 {
 	input.method == "POST"
+	containerId := get_value_or_default(input.context.payload, "containerId", null)
+	is_admin_or_container_owner(input.context, containerId)
 }
 
 default POST_Container_ConnectContainers_0 = false
@@ -43,7 +45,7 @@ POST_Container_DisConnectContainers_0 {
 	input.method == "POST"
 }
 
-is_admin_or_container_owner(context, containerId) {
+is_admin_or_container_owner(context, _) {
 	some entry in context.roleLookup
 	entry.lookupScope.scope == "user"
 	is_admin_role(entry.lookupResult)
@@ -52,6 +54,7 @@ is_admin_or_container_owner(context, containerId) {
 is_admin_or_container_owner(context, containerId) {
 	some entry in context.roleLookup
 	entry.lookupScope.scope == "container"
+	lower(entry.lookupScope.scopeRef) == lower(containerId)
 	is_owner_role(entry.lookupResult)
 }
 
@@ -61,4 +64,22 @@ is_owner_role(role) {
 
 is_admin_role(role) {
 	role.roleName == "administrator"
+}
+
+get_value_or_default(v, k, d) = r {
+	is_null_or_undefined(v, k)
+	r := d
+}
+
+get_value_or_default(v, k, _) = r {
+	not is_null_or_undefined(v, k)
+	r := v[k]
+}
+
+is_null_or_undefined(v, _) {
+	v == null
+}
+
+is_null_or_undefined(v, k) {
+	not v[k]
 }

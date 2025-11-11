@@ -41,51 +41,40 @@ namespace HelloContainer.Api.OPA
 
         protected async Task<bool> EvalPolicy(HttpContext httpContext, OpaPolicyRequirement requirement)
         {
-            try
+            var metadata = httpContext.GetEndpoint()!.Metadata;
+            var attrs = metadata.GetOrderedMetadata<OpaScopeDescribeAttribute>();
+            var opaAuthAttr = metadata.GetMetadata<OpaAuthorizeAttribute>();
+
+            var scopeParams = new List<UserRoleScope>();
+            if (attrs != null)
             {
-                var endpoint = httpContext.GetEndpoint();
-                var allowAnony = endpoint?.Metadata?.GetMetadata<AllowAnonymousAttribute>();
-                if (allowAnony != null)
-                    return true;
-
-                var scopeParams = new List<UserRoleScope>();
-                var attrs = httpContext.GetEndpoint()?.Metadata.GetOrderedMetadata<OpaScopeDescribeAttribute>();
-                if (attrs != null)
+                foreach (var attr in attrs)
                 {
-                    foreach (var attr in attrs)
-                    {
-                        var values = await ExtractScopeRefValues(httpContext, attr);
+                    var values = await ExtractScopeRefValues(httpContext, attr);
 
-                        if (values.Any())
-                        {
-                            if (!string.IsNullOrEmpty(attr.Scope))
-                                scopeParams.AddRange(values.Select(val => new UserRoleScope(attr.Scope!, val))!);
-                        }
+                    if (values.Any())
+                    {
+                        if (!string.IsNullOrEmpty(attr.Scope))
+                            scopeParams.AddRange(values.Select(val => new UserRoleScope(attr.Scope!, val))!);
                     }
                 }
+            }
 
-                var userId = httpContext.User.FindFirst("sub")?.Value;
-                var userName = httpContext.User.FindFirst("name")?.Value;
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return false;
-                }
+            var userId = httpContext.User.FindFirst("sub")?.Value;
+            var userName = httpContext.User.FindFirst("name")?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return false;
                 
-                var role = await _rolesRetriever.Retrieve(Guid.Parse(userId), userName, scopeParams);
+            var role = await _rolesRetriever.Retrieve(Guid.Parse(userId), userName, scopeParams);
 
-                var allow = await EvalOpaPolicyAsync(
-                       role,
-                       httpContext,
-                       requirement
-                   );
+            var allow = await EvalOpaPolicyAsync(
+                    role,
+                    httpContext,
+                    requirement,
+                    opaAuthAttr?.IncludeRequestPayloadInAuthContext ?? false
+                );
 
-                return allow.GetValueOrDefault(false);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[OPA Debug] Error in EvalPolicy: {ex.Message}");
-            }
-            return false;
+            return allow.GetValueOrDefault(false);
         }
 
         private async Task<IEnumerable<string>> ExtractScopeRefValues(HttpContext httpContext, OpaScopeDescribeAttribute opaScopeAttr)
@@ -97,17 +86,60 @@ namespace HelloContainer.Api.OPA
                     && httpContext.GetRouteData().Values.TryGetValue(opaScopeAttr.BindingKey, out var value)
                     && value != null:
                     return new[] { value.ToString() }!;
+
+                case ParameterBindingType.InBody:
+                    {
+                        var json = await ReadRequestBodyAsJsonDocumentAsync(httpContext);
+                        var valProp = json.RootElement;
+
+                        if (string.IsNullOrEmpty(opaScopeAttr.BindingKey) || TryGetProperty(json.RootElement, opaScopeAttr.BindingKey, out valProp))
+                        {
+                            var val = valProp.ValueKind == JsonValueKind.String
+                                ? valProp.GetString()
+                                : valProp.GetRawText();
+
+                            if (!string.IsNullOrEmpty(val))
+                                return new[] { val };
+                        }
+
+                        break;
+                    }
             }
 
             return Enumerable.Empty<string>();
+        }
+
+        private static async Task<JsonDocument> ReadRequestBodyAsJsonDocumentAsync(HttpContext httpContext)
+        {
+            httpContext.Request.EnableBuffering();
+            var json = await JsonDocument.ParseAsync(httpContext.Request.Body);
+            httpContext.Request.Body.Seek(0, SeekOrigin.Begin);
+            return json;
+        }
+
+        private static bool TryGetProperty(JsonElement element, string propertyName, out JsonElement value)
+        {
+            bool result = false;
+            var property = element.EnumerateObject()
+                .FirstOrDefault(p => p.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase));
+
+            if (property.Value.ValueKind != JsonValueKind.Undefined)
+            {
+                value = property.Value;
+                result = true;
+            }
+            else
+            {
+                value = default;
+            }
+            return result;
         }
 
         internal async Task<bool?> EvalOpaPolicyAsync(
             IEnumerable<UserRoleLookupEntry> roles,
             HttpContext httpContext,
             OpaPolicyRequirement requirement,
-            bool includePayloadInContext = false,
-            string? opaPolicyName = null
+            bool includePayloadInContext = false
         )
         {
             bool allow = false;
@@ -130,10 +162,7 @@ namespace HelloContainer.Api.OPA
                                 && r.Key != ActionRouteKey)
                     .Select(r => r.Value?.ToString()?.ToLowerInvariant()).ToArray();
 
-                var opName = !string.IsNullOrEmpty(opaPolicyName) ?
-                    opaPolicyName :
-                    $"{httpContext.Request.Method}_{controller}_{action}_{routeValues.Count - 2}";
-
+                var opName = $"{httpContext.Request.Method}_{controller}_{action}_{routeValues.Count - 2}";
                 var evalUri = new Uri($"{requirement.OpaApiBaseUrl}/{requirement.PolicyEvalEndpoint}/{opName}");
 
                 var requestPayload = includePayloadInContext ?
@@ -167,7 +196,6 @@ namespace HelloContainer.Api.OPA
         private async Task<OpaEvalResponse?> PostOpaEval(string uri, object body)
         {
             using var stream = new MemoryStream();
-            // Serialize asynchronously into the stream
             await JsonSerializer.SerializeAsync(stream, body, _jsonSerializerOptions);
             stream.Position = 0;
 
@@ -178,7 +206,6 @@ namespace HelloContainer.Api.OPA
             Console.WriteLine(jsonContent);
             stream.Position = 0;
 
-            // Create an HttpRequestMessage using StreamContent
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, uri)
             {
                 Content = new StreamContent(stream)
