@@ -1,5 +1,6 @@
 ﻿using HelloContainer.Api.Authorization;
 using HelloContainer.Application.Authorization;
+using HelloContainer.Application.ContextAccessor;
 using HelloContainer.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
@@ -15,13 +16,22 @@ namespace HelloContainer.Api.OPA
         protected readonly IUserRoleRetriever _rolesRetriever;
         protected readonly JsonSerializerOptions? _jsonSerializerOptions;
         private readonly HttpClient _httpClient;
+        protected readonly IContextAccessor<UserContext> _userContextAccessor;
 
-        public OpaPolicyHandler(IUserRoleRetriever rolesRetriever, IOptions<JsonSerializerOptions>? jsonSerializerOptions, IHttpClientFactory httpClientFactory)
+        public OpaPolicyHandler(
+            IContextAccessor<UserContext> userContextAccessor, 
+            IUserRoleRetriever rolesRetriever, 
+            IOptions<JsonSerializerOptions>? jsonSerializerOptions, 
+            IHttpClientFactory httpClientFactory)
         {
+            _userContextAccessor = userContextAccessor;
             _rolesRetriever = rolesRetriever;
             _jsonSerializerOptions = jsonSerializerOptions?.Value;
             _httpClient = httpClientFactory.CreateClient(nameof(OpaPolicyHandler));
         }
+        protected UserContext? UserContext => _userContextAccessor.Context;
+        protected string? UserId => this.UserContext?.UserId;
+        protected string? UserName => this.UserContext?.UserName;
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, OpaPolicyRequirement requirement)
         {
@@ -60,12 +70,10 @@ namespace HelloContainer.Api.OPA
                 }
             }
 
-            var userId = httpContext.User.FindFirst("sub")?.Value;
-            var userName = httpContext.User.FindFirst("name")?.Value;
-            if (string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(UserId))
                 return false;
                 
-            var role = await _rolesRetriever.Retrieve(Guid.Parse(userId), userName, scopeParams);
+            var role = await _rolesRetriever.Retrieve(Guid.Parse(UserId), UserName, scopeParams);
 
             var allow = await EvalOpaPolicyAsync(
                     role,

@@ -49,13 +49,10 @@ builder.Services.AddEndpointsApiExplorer()
          {
              Implicit = new OpenApiOAuthFlow
              {
-                 AuthorizationUrl = new Uri($"https://login.microsoftonline.com/a7cd5b59-9f45-477d-b7d6-60fc2dd177a1/oauth2/v2.0/authorize"),
+                 AuthorizationUrl = new Uri($"https://logintest.veracity.com/ed815121-cdfa-4097-b524-e2b23cd36eb6/b2c_1a_signinwithadfsidp/oauth2/v2.0/authorize"),
                  Scopes = new Dictionary<string, string>
                  {
-                    { "https://graph.microsoft.com/User.Read", "Read user profile" },
-                    { "openid", "OpenID Connect" },
-                    { "profile", "User profile" },
-                    { "email", "Email address" }
+                    { "https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation", "user_impersonation" }
                  }
              }
          }
@@ -72,7 +69,7 @@ builder.Services.AddEndpointsApiExplorer()
                      Id = "oauth2"
                  }
              },
-             new[] { "https://graph.microsoft.com/User.Read", "openid", "profile", "email" }
+             new[] { "https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation" }
          }
      });
  });
@@ -89,10 +86,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "HelloContainer API V1");
-        c.OAuthClientId(configuration["Swagger:OAuth:ClientId"]);
+        c.OAuthClientId("566af909-a1be-4bb9-86d7-89cec0d72736");
         c.OAuthScopeSeparator(" ");
     });
 }
+
 
 app.UseHttpsRedirection();
 
@@ -100,6 +98,7 @@ app.UseHttpsRedirection();
 app.UseDomainExceptionHandler();
 
 app.UseAuthentication();
+app.UseAspNetContext<UserContext>();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -1,5 +1,6 @@
 using HelloContainer.Api.OPA;
 using HelloContainer.Application.Authorization;
+using HelloContainer.Application.ContextAccessor;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
@@ -16,6 +17,7 @@ namespace HelloContainer.Api.Middleware
         public static IServiceCollection AddOpaPolicyAuthorization(this IServiceCollection services)
         {
             return services.AddScoped<IAuthorizationHandler>(sp => new OpaPolicyHandler(
+                    sp.GetRequiredService<IContextAccessor<UserContext>>(),
                     sp.GetRequiredService<IUserRoleRetriever>(),
                     sp.GetRequiredService<IOptions<JsonSerializerOptions>>(),
                     sp.GetRequiredService<IHttpClientFactory>())

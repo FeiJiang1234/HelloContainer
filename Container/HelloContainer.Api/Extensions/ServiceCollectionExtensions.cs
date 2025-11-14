@@ -53,6 +53,8 @@ namespace HelloContainer.Api.Extensions
                 x.RegisterServicesFromAssemblyContaining<OutboxWriterEventHandler>();
             });
 
+            services.AddAspNetContext(UserContext.ParseFromHttpContextOnEntryPoint);
+
             services.Configure<MessageBrokerSettings>(configuration.GetSection("MessageBroker"));
             services.AddSingleton(sp => sp.GetRequiredService<IOptions<MessageBrokerSettings>>().Value);
 
