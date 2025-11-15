@@ -12,7 +12,7 @@ namespace HelloContainer.WebApp.Extensions
             services.AddHttpClient<ContainerApiClient>(client =>
             {
                 client.BaseAddress = new Uri(apiOptions.ContainerApiBaseUri!);
-            }).AddHttpMessageHandler(sp => new BaseHttpClientHandler(sp.GetRequiredService<IHttpContextAccessor>()));
+            }).AddHttpMessageHandler(sp => new HttpClientHandlers.HttpClientHandler(sp.GetRequiredService<IHttpContextAccessor>()));
 
             services.AddHttpClient<UserApiClient>(client =>
             {

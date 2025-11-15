@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 public class UserContext
 {
@@ -17,7 +18,7 @@ public class UserContext
         if (!(context.User.Identity?.IsAuthenticated ?? false))
             return false;
 
-        userContext.UserId = context.User.FindFirst("sub")?.Value;
+        userContext.UserId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         userContext.UserName = context.User.FindFirst("name")?.Value;
         return true;
     }

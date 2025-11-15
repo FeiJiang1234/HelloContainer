@@ -8,6 +8,7 @@ using System.Text.Json;
 using HelloContainer.Application.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace HelloContainer.Application
 {
@@ -41,7 +42,7 @@ namespace HelloContainer.Application
 
         public async Task<Result<ContainerReadDto>> CreateContainer(CreateContainerDto createDto)
         {
-            var userd = _httpContextAccessor.HttpContext.User.FindFirst("sub")?.Value ?? "36f17b7f-3829-4e61-8106-d9047bd04dc4";
+            var userd = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "36f17b7f-3829-4e61-8106-d9047bd04dc4";
 
             var containerResult = await _containerFactory.CreateContainer(createDto.Name, createDto.Capacity, Guid.Parse(userd));
             if (containerResult.IsFailure)

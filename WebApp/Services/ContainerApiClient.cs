@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using HelloContainer.SharedKernel;
 using HelloContainer.WebApp.Dtos;
 
@@ -57,30 +56,5 @@ public class ContainerApiClient
         var disconnectDto = new DisconnectContainersDto(sourceId, targetId);
         await _httpClient.PostAsync("api/containers/disconnections", disconnectDto);
     }
-}
-
-public class ContainerDto
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public double Capacity { get; set; }
-    public double Amount { get; set; }
-    public List<Guid> ConnectedContainerIds { get; set; } = new();
-    public double FillPercentage => Capacity > 0 ? Amount / Capacity : 0;
-    public bool IsFull => FillPercentage >= 1.0;
-    public Guid CreatedBy { get; set; }
-    public string CreatedByName { get; set; }
-
-}
-
-public class CreateContainerDto
-{
-    [Required(ErrorMessage = "Container name is required")]
-    [StringLength(100, ErrorMessage = "Container name cannot exceed 100 characters")]
-    public string Name { get; set; } = string.Empty;
-    
-    [Required(ErrorMessage = "Capacity is required")]
-    [Range(0.1, double.MaxValue, ErrorMessage = "Capacity must be greater than 0")]
-    public decimal Capacity { get; set; }
 }
 

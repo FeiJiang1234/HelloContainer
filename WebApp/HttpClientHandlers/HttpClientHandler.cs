@@ -2,11 +2,11 @@
 
 namespace HelloContainer.WebApp.HttpClientHandlers
 {
-    public class BaseHttpClientHandler : DelegatingHandler
+    public class HttpClientHandler : DelegatingHandler
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public BaseHttpClientHandler(IHttpContextAccessor httpContextAccessor)
+        public HttpClientHandler(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }

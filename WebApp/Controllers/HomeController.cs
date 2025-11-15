@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using HelloContainer.WebApp.Services;
+using HelloContainer.WebApp.Dtos;
 
 namespace HelloContainer.WebApp.Controllers;
 
