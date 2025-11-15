@@ -20,6 +20,7 @@
     "@typescript-eslint/parser": "^6.7.2",
     "css-loader": "^6.8.1",
     "html-webpack-plugin": "^5.5.3",
+    "mini-css-extract-plugin": "^2.7.6",
     "style-loader": "^3.3.3",
     "ts-loader": "^9.4.4",
     "typescript": "^5.2.2",

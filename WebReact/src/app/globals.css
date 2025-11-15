@@ -1,9 +1,0 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* 导入样式结构 */
-@import '../styles/variables.css';
-@import '../styles/components.css';
-@import '../styles/utilities.css';
-@import '../styles/containers.css';
