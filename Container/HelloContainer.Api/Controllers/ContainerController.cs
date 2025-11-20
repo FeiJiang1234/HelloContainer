@@ -8,7 +8,7 @@ namespace HelloContainer.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]s")]
-    [Authorize(Policy = "OpaPolicy")]
+    //[Authorize(Policy = "OpaPolicy")]
     public class ContainerController : ApiControllerBase
     {
         private readonly ContainerService _containerService;
