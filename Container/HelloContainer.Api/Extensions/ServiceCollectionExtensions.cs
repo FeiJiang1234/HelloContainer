@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using HelloContainer.Api.Options;
 using HelloContainer.Application.Services;
+using HelloContainer.SharedKernel.Extensions;
 
 namespace HelloContainer.Api.Extensions
 {

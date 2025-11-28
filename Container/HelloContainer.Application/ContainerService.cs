@@ -4,11 +4,9 @@ using HelloContainer.Domain.Abstractions;
 using HelloContainer.Domain.Services;
 using HelloContainer.SharedKernel;
 using Microsoft.Extensions.Caching.Distributed;
-using System.Text.Json;
-using HelloContainer.Application.Extensions;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using HelloContainer.SharedKernel.Extensions;
 
 namespace HelloContainer.Application
 {
@@ -20,15 +18,11 @@ namespace HelloContainer.Application
         private readonly ContainerManager _containerManager;
         private readonly ContainerFactory _containerFactory;
         private readonly IDistributedCache _distributedCache;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
-        private static readonly DistributedCacheEntryOptions CacheOptions = new() { 
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30) 
-        };
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ContainerService(IContainerRepository containerRepository, IMapper mapper, IUnitOfWork unitOfWork,
             ContainerManager containerManager, ContainerFactory containerFactory,
-            IDistributedCache distributedCache, IOptions<JsonSerializerOptions> jsonSerializerOptions, IHttpContextAccessor httpContextAccessor)
+            IDistributedCache distributedCache, IHttpContextAccessor httpContextAccessor)
         {
             _containerRepository = containerRepository;
             _mapper = mapper;
@@ -36,7 +30,6 @@ namespace HelloContainer.Application
             _containerManager = containerManager;
             _containerFactory = containerFactory;
             _distributedCache = distributedCache;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -67,7 +60,7 @@ namespace HelloContainer.Application
             var container = await _distributedCache.CacheForResult(id.ToString(), async () =>
             {
                 return await _containerRepository.GetById(id);
-            }, _jsonSerializerOptions, CacheOptions);
+            });
 
             return _mapper.Map<ContainerReadDto>(container);
         }
