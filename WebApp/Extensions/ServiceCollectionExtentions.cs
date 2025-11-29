@@ -1,5 +1,5 @@
-﻿using HelloContainer.WebApp.HttpClientHandlers;
-using HelloContainer.WebApp.Options;
+﻿using HelloContainer.SharedKernel.Options;
+using HelloContainer.WebApp.HttpClientHandlers;
 using HelloContainer.WebApp.Services;
 
 namespace HelloContainer.WebApp.Extensions
@@ -9,6 +9,7 @@ namespace HelloContainer.WebApp.Extensions
         public static IServiceCollection ConfigureApiService(this IServiceCollection services, IConfiguration configuration)
         {
             var apiOptions = configuration.GetSection("ApiInfo").Get<ApiOptions>()!;
+            
             AddHttpClient<ContainerApiClient>(services, apiOptions.ContainerApiBaseUri!);
             AddHttpClient<UserApiClient>(services, apiOptions.UserApiBaseUri!);
 

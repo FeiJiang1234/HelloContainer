@@ -21,11 +21,19 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index(string? searchKeyword)
     {
-        var containers = await _containerApiClient.GetContainersAsync(searchKeyword);
-        await SetCreatedBy(containers);
+        try
+        {
+            var containers = await _containerApiClient.GetContainersAsync(searchKeyword);
+            await SetCreatedBy(containers);
 
-        ViewBag.SearchKeyword = searchKeyword;
-        return View(containers ?? new List<ContainerDto>());
+            ViewBag.SearchKeyword = searchKeyword;
+            return View(containers ?? new List<ContainerDto>());
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Forbidden)
+        {
+            ViewBag.ErrorMessage = "You do not have permission to access this resource";
+            return View("AccessDenied");
+        }
     }
 
     private async Task SetCreatedBy(List<ContainerDto>? containers)
@@ -59,16 +67,36 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddWater(Guid id, double amount)
     {
-        await _containerApiClient.AddWaterAsync(id, amount);
-        return RedirectToAction(nameof(Index));
+        try
+        {
+            await _containerApiClient.AddWaterAsync(id, amount);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Forbidden)
+        {
+            TempData["Error"] = "You do not have permission to add water to this container";
+            return RedirectToAction(nameof(Index));
+        }
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(Guid id)
     {
-        await _containerApiClient.DeleteContainerAsync(id);
-        return RedirectToAction(nameof(Index));
+        try
+        {
+            var success = await _containerApiClient.DeleteContainerAsync(id);
+            if (!success)
+            {
+                TempData["Error"] = "You do not have permission to delete this container";
+            }
+            return RedirectToAction(nameof(Index));
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Forbidden)
+        {
+            TempData["Error"] = "You do not have permission to perform this action";
+            return RedirectToAction(nameof(Index));
+        }
     }
 
     [HttpPost]

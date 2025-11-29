@@ -1,0 +1,47 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-shield-lock"></i> Access Denied
+                    </h4>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-exclamation-triangle text-warning" style="font-size: 4rem;"></i>
+                    </div>
+                    <h5 class="card-title">403 - Forbidden</h5>
+                    <p class="card-text">
+                        @if (ViewBag.ErrorMessage != null)
+                        {
+                            @ViewBag.ErrorMessage
+                        }
+                        else
+                        {
+                            <text>Sorry, you do not have permission to access this resource.</text>
+                        }
+                    </p>
+                    <p class="text-muted">
+                        <small>If you believe this is an error, please contact your system administrator.</small>
+                    </p>
+                    <div class="mt-4">
+                        <a asp-action="Index" asp-controller="Home" class="btn btn-primary">
+                            <i class="bi bi-house"></i> Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+</style>

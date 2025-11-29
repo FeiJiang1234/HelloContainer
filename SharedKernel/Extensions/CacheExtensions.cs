@@ -8,7 +8,9 @@ namespace HelloContainer.SharedKernel.Extensions
         public static async Task<T> CacheForResult<T>(this IDistributedCache cache, string key, Func<Task<T>> func)
         {
             var jsonSerializerOptions = DWJsonSerializerOptions.Create();
-            var cacheEntryOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1) };
+            var cacheEntryOptions = new DistributedCacheEntryOptions { 
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1) 
+            };
 
             T result = await cache.GetFromJsonAsync<T>(key, jsonSerializerOptions, default);
             if (result == null)

@@ -39,10 +39,10 @@ public class ContainerApiClient
         return await _httpClient.PostAsync<AddWaterDto, ContainerDto>($"api/containers/{id}/water", addWaterDto);
     }
 
-    public async Task DeleteContainerAsync(Guid id)
+    public async Task<bool> DeleteContainerAsync(Guid id)
     {
         var response = await _httpClient.DeleteAsync($"api/containers/{id}");
-        response.EnsureSuccessStatusCode();
+        return response.IsSuccessStatusCode;
     }
 
     public async Task ConnectContainersAsync(Guid sourceId, Guid targetId)

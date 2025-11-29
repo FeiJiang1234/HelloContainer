@@ -34,8 +34,6 @@ builder.Services.AddStackExchangeRedisCache(o =>
     o.Configuration = connStr;
     o.InstanceName = $"Container-Dev";
 });
-builder.Services.Configure<DistributedCacheEntryOptions>
-    (o => o.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer()

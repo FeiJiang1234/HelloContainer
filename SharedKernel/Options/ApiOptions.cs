@@ -1,4 +1,4 @@
-﻿namespace HelloContainer.WebApp.Options
+﻿namespace HelloContainer.SharedKernel.Options
 {
     public class ApiOptions
     {

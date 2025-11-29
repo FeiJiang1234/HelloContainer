@@ -16,9 +16,9 @@ using HelloContainer.Application.Authorization;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using HelloContainer.Api.Options;
 using HelloContainer.Application.Services;
 using HelloContainer.SharedKernel.Extensions;
+using HelloContainer.SharedKernel.Options;
 
 namespace HelloContainer.Api.Extensions
 {
