@@ -1,0 +1,12 @@
+@model HelloContainer.WebApp.ViewComponents.UserInfoViewModel
+
+@if (!string.IsNullOrEmpty(Model.DisplayName))
+{
+    <span class="navbar-text me-3">
+        Hello, @Model.DisplayName
+        @if (!string.IsNullOrEmpty(Model.Role))
+        {
+            <span class="badge bg-primary ms-2">@Model.Role</span>
+        }
+    </span>
+}

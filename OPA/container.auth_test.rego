@@ -69,7 +69,6 @@ test_POST_Container_AddWater_1_is_admin if {
                     "lookupResult":  {
                         "roleName": "administrator"
                     }
-                    
                 }
             ],
             "payload": {
@@ -95,7 +94,6 @@ test_POST_Container_AddWater_1_is_not_admin if {
                     "lookupResult":  {
                         "roleName": "reader"
                     }
-                    
                 }
             ],
             "payload": {
@@ -111,9 +109,6 @@ test_POST_Container_AddWater_1_is_container_owner if {
     input_data := {
         "method": "POST",
         "path": ["containers", "cc627232-1937-4aa8-8eb1-b77e7cf7f4f8"],
-        "args": [
-            "cc627232-1937-4aa8-8eb1-b77e7cf7f4f8"
-        ],
         "context": {
             "roleLookup": [
                 {
@@ -124,7 +119,6 @@ test_POST_Container_AddWater_1_is_container_owner if {
                     "lookupResult":  {
                         "roleName": "owner"
                     }
-                    
                 }
             ],
             "payload": {
